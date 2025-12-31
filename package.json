@@ -5,6 +5,9 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "superpowers-fusion": "./dist/cli/init.js"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",

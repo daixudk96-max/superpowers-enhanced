@@ -1,0 +1,146 @@
+---
+name: finishing-a-development-branch
+description: Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup
+---
+
+# Finishing a Development Branch
+
+## Overview
+
+Guide completion of development work by presenting clear options and handling chosen workflow.
+
+**Core principle:** Verify tests → Present options → Execute choice → Clean up.
+
+**Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
+
+## The Process
+
+### Step 1: Verify Tests
+
+**Before presenting options, verify tests pass:**
+
+```bash
+# Run project's test suite
+npm test / cargo test / pytest / go test ./...
+```
+
+**If tests fail:**
+```
+Tests failing (<N> failures). Must fix before completing:
+
+[Show failures]
+
+Cannot proceed with merge/PR until tests pass.
+```
+
+Stop. Don't proceed to Step 2.
+
+**If tests pass:** Continue to Step 2.
+
+### Step 2: Determine Base Branch
+
+```bash
+# Try common base branches
+git merge-base HEAD main 2>/dev/null || git merge-base HEAD master 2>/dev/null
+```
+
+Or ask: "This branch split from main - is that correct?"
+
+### Step 3: Present Options
+
+Present exactly these 4 options:
+
+```
+Implementation complete. What would you like to do?
+
+1. Merge locally - Merge to <base> and stay here
+2. Create PR - Push branch and create pull request
+3. Keep as-is - Leave branch for manual handling
+4. Discard - Delete branch and all changes
+```
+
+Wait for user choice. Do not proceed without explicit selection.
+
+### Step 4: Execute Choice
+
+**Option 1 - Merge Locally:**
+```bash
+git checkout <base>
+git merge <feature-branch>
+git branch -d <feature-branch>
+```
+
+**Option 2 - Create PR:**
+```bash
+git push -u origin <feature-branch>
+# Create PR via gh or API
+```
+
+**Option 3 - Keep As-Is:**
+Just confirm and exit.
+
+**Option 4 - Discard:**
+```
+Type 'discard' to confirm deletion of all work on this branch:
+```
+Then:
+```bash
+git checkout <base>
+git branch -D <feature-branch>
+```
+
+### Step 5: Worktree Cleanup
+
+**For Options 1 and 4:** Check if in worktree:
+```bash
+git worktree list | grep $(git branch --show-current)
+```
+
+If yes:
+```bash
+git worktree remove <worktree-path>
+```
+
+**For Option 3:** Keep worktree.
+
+## Quick Reference
+
+| Option | Merge | Push | Keep Worktree | Cleanup Branch |
+|--------|-------|------|---------------|----------------|
+| 1. Merge locally | ✓ | - | - | ✓ |
+| 2. Create PR | - | ✓ | ✓ | - |
+| 3. Keep as-is | - | - | ✓ | - |
+| 4. Discard | - | - | - | ✓ (force) |
+
+## Integration with Archive
+
+**For Option 1 (Merge Locally):**
+After successful merge, prompt:
+```
+Would you like to archive this change? Run /archive <change-name>
+```
+
+This triggers the archive workflow to save metadata and create Git tags.
+
+## Red Flags
+
+**Never:**
+- Proceed with failing tests
+- Merge without verifying tests on result
+- Delete work without confirmation
+- Force-push without explicit request
+
+**Always:**
+- Verify tests before offering options
+- Present exactly 4 options
+- Get typed confirmation for Option 4
+- Clean up worktree for Options 1 & 4 only
+
+## Integration
+
+**Called by:**
+- **subagent-driven-development** (Step 7) - After all tasks complete
+- **executing-plans** (Step 5) - After all batches complete
+
+**Pairs with:**
+- **using-git-worktrees** - Cleans up worktree created by that skill

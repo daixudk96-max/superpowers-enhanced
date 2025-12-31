@@ -1,50 +1,82 @@
-# /setup Command
+# /setup
 
-Initialize context files for the project.
+Initialize project context files for superpowers-fusion workflow.
 
-## Usage
+## When to Use
 
-```
-/setup
-```
+Run this command at the start of a new project to set up the context directory structure.
+
+## What You Will Do
+
+1. **Create the `context/` directory** if it doesn't exist
+
+2. **Create template files**:
+   - `context/product.md` - Product description and user personas
+   - `context/tech-stack.md` - Technology stack and dependencies
+   - `context/workflow.md` - Development workflow and conventions
+
+3. **Create the `changes/` directory** for change tracking
+
+4. **Create the `.fusion/` directory** for runtime state (add to .gitignore)
+
+## Template Content
+
+### context/product.md
+```markdown
+# Product Context
+
+## Product Name
+[Your product name]
 
 ## Description
+[Brief description of what your product does]
 
-Creates the `context/` directory with template files:
-- `product.md` - Product and user information
-- `tech-stack.md` - Technology stack details
-- `workflow.md` - Development workflow
+## Target Users
+- [User persona 1]
+- [User persona 2]
 
-## Implementation
-
-```typescript
-import fs from 'node:fs';
-import path from 'node:path';
-
-export async function setupCommand(projectDir: string): Promise<void> {
-  const contextDir = path.join(projectDir, 'context');
-  
-  // Create context directory
-  fs.mkdirSync(contextDir, { recursive: true });
-  
-  // Create template files
-  const templates = {
-    'product.md': PRODUCT_TEMPLATE,
-    'tech-stack.md': TECH_STACK_TEMPLATE,
-    'workflow.md': WORKFLOW_TEMPLATE,
-  };
-  
-  for (const [filename, content] of Object.entries(templates)) {
-    const filepath = path.join(contextDir, filename);
-    if (!fs.existsSync(filepath)) {
-      fs.writeFileSync(filepath, content, 'utf8');
-    }
-  }
-  
-  console.log('✅ Context files initialized in context/');
-}
+## Key Features
+- [ ] Feature 1
+- [ ] Feature 2
 ```
 
-## Templates
+### context/tech-stack.md
+```markdown
+# Technology Stack
 
-See `context/README.md` for template content.
+## Languages
+- [Primary language]
+
+## Frameworks
+- [Framework name]
+
+## Build Tools
+- [Build tool]
+
+## Testing
+- [Test framework]
+```
+
+### context/workflow.md
+```markdown
+# Development Workflow
+
+## Branch Strategy
+- `main` - Production-ready code
+- `feature/*` - Feature branches
+
+## Commit Convention
+- Use conventional commits (feat:, fix:, docs:, etc.)
+
+## Code Review
+- All changes require review before merge
+```
+
+## Completion
+
+After running this command, confirm:
+- [ ] `context/` directory exists with 3 template files
+- [ ] `changes/` directory exists
+- [ ] `.fusion/` directory exists and is in .gitignore
+
+Report: "Context initialized. Edit the files in `context/` to customize for your project."

@@ -1,6 +1,6 @@
-# /new-change Command
+# /new-change
 
-Create a new change for tracking.
+Create a new change for structured development tracking.
 
 ## Usage
 
@@ -8,78 +8,105 @@ Create a new change for tracking.
 /new-change <name>
 ```
 
-## Description
+## Arguments
 
-Creates a new change directory with template files:
-- `changes/{name}/proposal.md`
-- `changes/{name}/tasks.md`
-- `changes/{name}/specs/`
+- `name` - A short, descriptive name for the change (use-kebab-case)
 
-Also initializes status tracking in `.fusion/status.json`.
+## When to Use
 
-## Implementation
+- Starting a new feature, bug fix, or refactoring effort
+- When you want to track progress with phases and tasks
+- Before beginning any significant code changes
 
-```typescript
-import fs from 'node:fs';
-import path from 'node:path';
-import { initializeStatus } from '../lib/task-status-tracker.js';
+## What You Will Do
 
-export async function newChangeCommand(name: string): Promise<void> {
-  const changeDir = path.join('changes', name);
-  
-  // Check if change already exists
-  if (fs.existsSync(changeDir)) {
-    console.error(`Change already exists: ${name}`);
-    return;
-  }
-  
-  // Create directory structure
-  fs.mkdirSync(path.join(changeDir, 'specs'), { recursive: true });
-  
-  // Create template files
-  fs.writeFileSync(
-    path.join(changeDir, 'proposal.md'),
-    PROPOSAL_TEMPLATE.replace('{{name}}', name),
-    'utf8'
-  );
-  
-  fs.writeFileSync(
-    path.join(changeDir, 'tasks.md'),
-    TASKS_TEMPLATE,
-    'utf8'
-  );
-  
-  // Initialize status tracking
-  initializeStatus(name);
-  
-  console.log(`✅ Created change: ${changeDir}`);
-}
+1. **Verify the change doesn't already exist** in `changes/<name>/`
 
-const PROPOSAL_TEMPLATE = `# Change: {{name}}
+2. **Create the change directory structure**:
+   ```
+   changes/<name>/
+   ├── proposal.md      # Why and what
+   ├── tasks.md         # Phased task breakdown
+   └── specs/           # Detailed specifications
+   ```
 
-> Brief description
+3. **Create `proposal.md`** with this template:
+   ```markdown
+   # Change: <name>
 
-## Why
+   > Brief one-line description
 
-[Motivation]
+   ## Why
 
-## What Changes
+   [Motivation for this change - what problem does it solve?]
 
-[Description of changes]
+   ## What Changes
 
-## Impact
+   [High-level description of what will be modified]
 
-- Affected specs: 
-- Affected code: 
-`;
+   ## Impact
 
-const TASKS_TEMPLATE = `## Phase 1: [Title]
+   - **Affected specs**: [List any spec files]
+   - **Affected code**: [List key files/modules]
+   - **Risk tier**: [0-3, see TDD skill for definitions]
 
-- [ ] 1.1 [Task description]
-- [ ] 1.2 [Task description]
+   ## Success Criteria
 
-## Phase 2: [Title]
+   - [ ] Criterion 1
+   - [ ] Criterion 2
+   ```
 
-- [ ] 2.1 [Task description]
-`;
-```
+4. **Create `tasks.md`** with this template:
+   ```markdown
+   # Tasks: <name>
+
+   ## Phase 1: [Phase Title]
+
+   - [ ] 1.1 [Task description - keep to 2-5 minutes of work]
+   - [ ] 1.2 [Task description]
+
+   ## Phase 2: [Phase Title]
+
+   - [ ] 2.1 [Task description]
+   - [ ] 2.2 [Task description]
+
+   ---
+
+   **Legend**:
+   - `[ ]` = Pending
+   - `[x]` = Complete
+   - `[~]` = In Progress
+   - `[-]` = Skipped
+   ```
+
+5. **Initialize status tracking** in `.fusion/status.json`:
+   ```json
+   {
+     "currentChange": "<name>",
+     "startedAt": "<ISO timestamp>",
+     "tasks": {}
+   }
+   ```
+
+## Completion
+
+Report: "Created change: `changes/<name>/`. Edit `proposal.md` to define the change, then break down work in `tasks.md`."
+
+## Next Steps (Integrated Workflow)
+
+After creating the change, follow this workflow:
+
+1. **Fill in `proposal.md`** with the change details
+2. **Invoke the writing-plans skill** to break down the work into phased tasks
+   - This replaces the need for a separate `/write-plan` command
+   - The skill guides you through creating detailed, time-boxed tasks
+3. **Begin execution** with `/execute-plan` or use the executing-plans skill
+4. **Archive on completion** with `/archive <name>`
+
+## Integration with TDD
+
+For changes with code modifications:
+- Each task should be time-boxed (2-5 minutes of work)
+- Tests must be written/verified before implementation code
+- Risk tier in `proposal.md` determines TDD enforcement level
+

@@ -17,6 +17,19 @@ This repository contains the `superpowers-fusion` plugin implementation, designe
 
 ## Installation
 
+### Quick Start (Recommended)
+
+```bash
+# One-command installation
+npx superpowers-fusion init
+
+# Or install globally
+npm install -g superpowers-fusion
+superpowers-fusion init
+```
+
+### Manual Installation
+
 ```bash
 # 1. Clone/copy to your project
 cp -r superpowers-fusion .claude/
@@ -33,6 +46,22 @@ cp .env.example .env
 # 5. Install CodexMCP
 claude mcp add codex -s user -- uvx --from git+https://github.com/GuDaStudio/codexmcp.git codexmcp
 ```
+
+### TDD Configuration
+
+After installation, configure TDD in your `.env` file:
+
+```bash
+# TDD Validation
+TDD_VALIDATION_ENABLED=true
+TDD_VALIDATION_CLIENT=sdk  # or 'api'
+
+# API Provider (if TDD_VALIDATION_CLIENT=api)
+TDD_API_PROVIDER=anthropic  # anthropic|openrouter|google|openai-compatible
+ANTHROPIC_API_KEY=your-key-here
+```
+
+See `.env.example` for full configuration options.
 
 ## Quick Start
 
