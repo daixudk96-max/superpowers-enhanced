@@ -64,6 +64,7 @@ function buildProviderConfig(provider: Provider): ProviderConfig {
             return {
                 provider,
                 apiKey: env.ANTHROPIC_API_KEY,
+                baseUrl: env.ANTHROPIC_BASE_URL || undefined, // 空则使用官方默认
                 model: env.ANTHROPIC_MODEL ?? "claude-3-5-haiku-20241022",
             };
         case "openrouter":
@@ -77,6 +78,7 @@ function buildProviderConfig(provider: Provider): ProviderConfig {
             return {
                 provider,
                 apiKey: env.GOOGLE_API_KEY,
+                baseUrl: env.GOOGLE_BASE_URL || undefined, // 空则使用官方默认
                 model: env.GOOGLE_MODEL ?? "gemini-2.0-flash-exp",
                 projectId: env.GOOGLE_VERTEX_PROJECT_ID,
                 location: env.GOOGLE_VERTEX_LOCATION,
