@@ -83,7 +83,11 @@ async function callAnthropicAPI(
     request: ValidationRequest,
     provider: ProviderConfig
 ): Promise<ValidationResult> {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    // 用户填写了 base URL 就用用户的，没填写就用官方默认值
+    const baseUrl = provider.baseUrl || "https://api.anthropic.com";
+    const url = `${baseUrl}/v1/messages`;
+
+    const response = await fetch(url, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -153,7 +157,9 @@ async function callGoogleAPI(
     provider: ProviderConfig
 ): Promise<ValidationResult> {
     const model = provider.model ?? "gemini-2.0-flash-exp";
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${provider.apiKey}`;
+    // 用户填写了 base URL 就用用户的，没填写就用官方默认值
+    const baseUrl = provider.baseUrl || "https://generativelanguage.googleapis.com";
+    const url = `${baseUrl}/v1beta/models/${model}:generateContent?key=${provider.apiKey}`;
 
     const response = await fetch(url, {
         method: "POST",
