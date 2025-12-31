@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { preToolEdit } from "../hooks/preToolEdit.js";
 import { determineRiskTier } from "../lib/risk-validator.js";
-import { loadConfig } from "../lib/config-loader.js";
 
 // Mock config to ensure TDD is enabled
 vi.mock("../lib/config-loader.js", () => ({

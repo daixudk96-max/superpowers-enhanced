@@ -224,7 +224,7 @@ async function callOpenAICompatibleAPI(
 /**
  * Call SDK mode (placeholder - uses Claude Code subscription)
  */
-async function callSdkMode(request: ValidationRequest): Promise<ValidationResult> {
+async function callSdkMode(_request: ValidationRequest): Promise<ValidationResult> {
     // In real implementation, this would use Claude Code's built-in SDK
     // For now, return a placeholder that approves (SDK integration TBD)
     return {

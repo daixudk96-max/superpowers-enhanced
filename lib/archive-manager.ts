@@ -69,7 +69,7 @@ export async function archiveChange(
  */
 async function generateMetadata(
     changeName: string,
-    sourceDir: string
+    _sourceDir: string
 ): Promise<ArchiveMetadata> {
     const config = loadConfig();
     const statusFile = path.join(

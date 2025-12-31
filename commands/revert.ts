@@ -3,7 +3,6 @@ import {
     revertChange,
     checkGhostCommits,
     type RevertLevel,
-    type RevertResult,
 } from "../lib/revert-handler.js";
 import {
     listArchivedChanges,

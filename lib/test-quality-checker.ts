@@ -185,7 +185,7 @@ function findTestCalls(body: Statement[]): TestCall[] {
 
         // Recurse into child nodes
         for (const key of Object.keys(node)) {
-            const child = (node as Record<string, unknown>)[key];
+            const child = (node as unknown as Record<string, unknown>)[key];
             if (Array.isArray(child)) {
                 child.forEach((c) => {
                     if (c && typeof c === "object" && "type" in c) traverse(c as Node);

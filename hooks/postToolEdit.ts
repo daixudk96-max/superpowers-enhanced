@@ -1,7 +1,7 @@
 import { execSync } from "node:child_process";
 import { loadConfig } from "../lib/config-loader.js";
 import { checkTestQuality } from "../lib/test-quality-checker.js";
-import { isTestFile, detectLanguage } from "../lib/language-adapter.js";
+import { isTestFile } from "../lib/language-adapter.js";
 
 export interface PostToolEditEvent {
     toolName: string;
@@ -61,7 +61,7 @@ export function postToolEdit(event: PostToolEditEvent): PostToolEditResult {
  * Parse test output to determine if tests are passing
  */
 function parseTestOutput(output: string): boolean {
-    const lower = output.toLowerCase();
+    // const lower = output.toLowerCase();
 
     // Common failure patterns
     const failurePatterns = [
@@ -105,7 +105,7 @@ function parseTestOutput(output: string): boolean {
 export function recordTaskCompletion(
     taskId: string,
     sha: string,
-    message: string
+    _message: string
 ): void {
     // This would update .fusion/status.json
     // Implementation handled by status-tracker module

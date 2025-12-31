@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { execSync } from "node:child_process";
 import { archiveChange, type ArchiveMetadata } from "../lib/archive-manager.js";
-import { allTasksComplete, resetStatus } from "../lib/task-status-tracker.js";
+import { resetStatus } from "../lib/task-status-tracker.js";
 import { cleanupSessionsForChange } from "../lib/codex-session.js";
 
 export interface ArchiveResult {
@@ -39,7 +39,7 @@ export async function archive(
     const tasksFile = path.join(sourceDir, "tasks.md");
     if (fs.existsSync(tasksFile)) {
         const content = fs.readFileSync(tasksFile, "utf8");
-        const taskIds = parseTaskIds(content);
+        // const taskIds = parseTaskIds(content);
         const incompleteCount = countIncompleteTasks(content);
 
         if (incompleteCount > 0 && !options.yes) {
@@ -87,17 +87,17 @@ export async function archive(
 /**
  * Parse task IDs from tasks.md content
  */
-function parseTaskIds(content: string): string[] {
-    const taskPattern = /- \[[x ]\] (\d+\.\d+)/gi;
-    const ids: string[] = [];
-    let match;
-
-    while ((match = taskPattern.exec(content)) !== null) {
-        ids.push(match[1]);
-    }
-
-    return ids;
-}
+// function parseTaskIds(content: string): string[] {
+//     const taskPattern = /- \[[x ]\] (\d+\.\d+)/gi;
+//     const ids: string[] = [];
+//     let match;
+//
+//     while ((match = taskPattern.exec(content)) !== null) {
+//         ids.push(match[1]);
+//     }
+//
+//     return ids;
+// }
 
 /**
  * Count incomplete tasks
