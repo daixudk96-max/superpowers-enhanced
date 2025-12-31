@@ -1,103 +1,92 @@
-# Superpowers Fusion (Enhanced)
+# Superpowers Fusion
 
 > **Unified AI Coding Assistant System**
 >
-> Fusing **Superpowers** (Core Skills), **TDD-Guard** (Risk-Tier Safety), **OpenSpec** (Change Management), **Conductor** (Context Awareness), and **CodexMCP** (Dual-Agent Collaboration).
+> Fusing **Superpowers** (Core Skills), **TDD-Guard** (Risk-Tier Safety), **OpenSpec** (Change Management), and **CodexMCP** (Dual-Agent Collaboration).
 
-This repository contains the `superpowers-fusion` plugin implementation, designed to enhance Claude Code/Cursor/Windsurf workflows with agentic capabilities.
+A robust plugin ecosystem for Claude Code that enforces test-driven development and structured workflows.
 
-## Key Features
+## Features
 
-- **🛡️ TDD Enforcement**: Risk-tier based validation (Tier 0-3) preventing unsafe edits without tests.
-- **🧠 Skills Library**: 6 core agentic skills (Brainstorming, Planning, Execution, Subagent, TDD, Verification).
-- **📋 Change Management**: `/new-change` -> `/archive` workflow with `metadata.json` tracking and Git SHA snapshots.
+- **🛡️ TDD Enforcement**: Hooks that block edits to core code without tests (Tier 2/3).
+- **🧠 Skills Library**: 7 core agentic skills (Brainstorming, Planning, Execution, Subagent, TDD, Verification).
+- **📋 Change Management**: `/new-change` → `/archive` workflow with metadata tracking.
 - **⏮️ Granular Revert**: Three-level undo capability (Change / Phase / Task).
-- **🤖 CodexMCP Integration**: Dual-agent sessions (Architect + Builder) with session persistence.
-- **🌐 Multi-Provider API**: Support for Anthropic, OpenRouter, Google Gemini, and OpenAI-compatible endpoints.
+- **🤖 CodexMCP Integration**: Dual-agent collaboration with unified diff prototypes.
 
 ## Installation
 
-### Quick Start (Recommended)
+### 1. Install CLI Tool
+
+Install the package globally to enable the TDD hooks and CLI commands.
 
 ```bash
-# One-command installation
-npx superpowers-fusion init
-
-# Or install globally
 npm install -g superpowers-fusion
+```
+
+### 2. Initialize in Project
+
+Run this command in **every project** where you want to enable Superpowers Fusion.
+
+```bash
 superpowers-fusion init
 ```
 
-### Manual Installation
+This will:
+- Configure Claude Code hooks in `~/.claude/settings.json` (if not present)
+- Create a `.fusion/` directory for local state
+- Create `CLAUDE.md` with usage instructions
+- Copy `.env.example` to `.env`
+
+### 3. Install CodexMCP (Optional but Recommended)
+
+For dual-agent collaboration features:
 
 ```bash
-# 1. Clone/copy to your project
-cp -r superpowers-fusion .claude/
-
-# 2. Install dependencies
-cd .claude/superpowers-fusion && npm install
-
-# 3. Build
-npm run build
-
-# 4. Configure (optional)
-cp .env.example .env
-
-# 5. Install CodexMCP
 claude mcp add codex -s user -- uvx --from git+https://github.com/GuDaStudio/codexmcp.git codexmcp
 ```
 
-### TDD Configuration
+## How It Works
 
-After installation, configure TDD in your `.env` file:
+### TDD Guard (Hooks)
+
+The system automatically intercepts `Edit` and `Write` tool calls:
+
+- **Tier 0 Files** (Docs, Configs): Allowed immediately.
+- **Tier 2 Files** (General Code): **BLOCKED** unless a test file exists OR `<!-- TDD-EXEMPT -->` comment is present.
+- **Tier 3 Files** (Core Logic): **BLOCKED** unless a test file exists (No exemptions).
+
+### Skills & Commands
+
+The initialization process installs global Markdown-based skills and commands for Claude:
+
+- `/setup` - Initialize project context
+- `/new-change <name>` - Start a structured change
+- `/archive <name>` - Archive a completed change
+- `/revert` - undo changes with precision
+
+## Configuration
+
+Edit `.env` to configure TDD behavior:
 
 ```bash
-# TDD Validation
+# Enable/Disable TDD validation
 TDD_VALIDATION_ENABLED=true
-TDD_VALIDATION_CLIENT=sdk  # or 'api'
 
-# API Provider (if TDD_VALIDATION_CLIENT=api)
-TDD_API_PROVIDER=anthropic  # anthropic|openrouter|google|openai-compatible
-ANTHROPIC_API_KEY=your-key-here
-```
-
-See `.env.example` for full configuration options.
-
-## Quick Start
-
-```bash
-# Initialize context
-/setup
-
-# Create a new change
-/new-change my-feature
-
-# Archive completed change
-/archive my-feature
-
-# Revert if needed
-/revert change my-feature
+# Default Risk Tier (1=Log, 2=Warn/Block, 3=Strict)
+TDD_DEFAULT_TIER=2
 ```
 
 ## Project Structure
 
 ```
 superpowers-fusion/
-├── skills/           # 6 Skills (brainstorming, writing-plans, etc.)
-├── hooks/            # TDD enforcement hooks
-├── lib/              # Core modules (config, risk, language, AST...)
-├── commands/         # Slash command handlers
-├── context/          # Project context templates
-├── changes/          # Change tracking
-└── .fusion/          # Runtime state (gitignored)
+├── src/cli/            # CLI implementation (init, verify-tdd)
+├── skills/             # Markdown skill templates
+├── commands/           # Markdown command templates
+├── context/            # Project context templates
+└── dist/               # Compiled JS code
 ```
-
-## Configuration
-
-See `.env.example` for all configuration options including:
-- TDD validation settings
-- Multi-provider API support (Anthropic, OpenRouter, Google, OpenAI)
-- AST quality checks
 
 ## License
 
