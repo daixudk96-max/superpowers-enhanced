@@ -1,0 +1,13 @@
+{
+  "name": "superpowers-fusion",
+  "description": "Unified Claude Code plugin fusing Superpowers, TDD-Guard, OpenSpec, Conductor, and CodexMCP for enhanced AI-driven development workflows",
+  "version": "0.2.0",
+  "author": {
+    "name": "",
+    "email": ""
+  },
+  "homepage": "https://github.com/user/superpowers-fusion",
+  "repository": "https://github.com/user/superpowers-fusion",
+  "license": "MIT",
+  "keywords": ["skills", "tdd", "codex", "openspec", "change-management", "dual-agent", "risk-tier"]
+}

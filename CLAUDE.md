@@ -1,24 +1,25 @@
 # superpowers-fusion
 
-> Unified Claude Code plugin fusing Superpowers, TDD-Guard, OpenSpec, Conductor, and CodexMCP
+> Unified Claude Code plugin fusing Superpowers, TDD-Guard, OpenSpec, and CodexMCP
 
 ## Quick Start
 
+### Plugin Installation
+
 ```bash
-# Prerequisites
-Node.js 18+ and npm
+# Option 1: Via marketplace (when published)
+/plugin marketplace add <username>/superpowers-fusion-marketplace
+/plugin install superpowers-fusion@superpowers-fusion-marketplace
 
-# Install
-npm install
+# Option 2: Manual installation
+cp -r skills/* ~/.claude/skills/
+cp commands/*.md ~/.claude/commands/
+```
 
-# Configure
-cp .env.example .env
-# Edit .env with your API keys
+### CodexMCP Installation
 
-# Install CodexMCP
+```bash
 claude mcp add codex -s user -- uvx --from git+https://github.com/GuDaStudio/codexmcp.git codexmcp
-
-# Verify
 claude mcp list
 ```
 
@@ -26,23 +27,30 @@ claude mcp list
 
 ```
 superpowers-fusion/
-├── skills/           # Skill implementations (brainstorming, writing-plans, etc.)
-├── hooks/            # Lifecycle hooks (preToolEdit, postToolEdit, etc.)
-├── context/          # Context providers (product.md, tech-stack.md, workflow.md)
-├── changes/          # OpenSpec change tracking
-├── lib/              # Shared utilities
-├── commands/         # Slash command handlers (/setup, /archive, /revert)
-├── .fusion/          # Runtime state (gitignored)
-└── .env.example      # Configuration template
+├── .claude-plugin/       # Plugin manifest
+├── skills/               # 7 Core Skills (Markdown)
+│   ├── brainstorming/
+│   ├── writing-plans/
+│   ├── executing-plans/
+│   ├── subagent-driven-development/
+│   ├── codex-collaboration/
+│   ├── test-driven-development/
+│   └── verification-before-completion/
+├── commands/             # 4 Slash Commands (Markdown)
+│   ├── setup.md
+│   ├── new-change.md
+│   ├── archive.md
+│   └── revert.md
+├── context/              # Project context templates
+└── changes/              # Change tracking
 ```
 
 ## Features
 
-- **Skills** (from Superpowers): Reusable skill templates for brainstorming, planning, execution
-- **TDD Enforcement** (from TDD-Guard): Risk-tier based test-first development
-- **Change Management** (from OpenSpec): Proposal → Implement → Archive workflow
-- **Context Management** (from Conductor): Persistent project context
-- **AI Collaboration** (via CodexMCP): Claude Code + Codex dual-agent workflow
+- **Skills**: Pure Markdown skill templates that Claude follows automatically
+- **Commands**: /setup, /new-change, /archive, /revert
+- **TDD**: Risk-tier based validation (Tier 0-3) embedded in skills
+- **Codex**: Dual-agent collaboration workflow
 
 ---
 
@@ -62,7 +70,7 @@ superpowers-fusion/
 **Parameters**:
 - `PROMPT` (required): Task instruction for Codex
 - `cd` (required): Working directory path
-- `sandbox`: `"read-only"` (recommended), `"workspace-write"`, or `"danger-full-access"`
+- `sandbox`: `"read-only"` (recommended) - **ALWAYS use read-only**
 - `SESSION_ID`: Pass to continue previous conversation
 
 **Session Management**:
@@ -73,8 +81,8 @@ superpowers-fusion/
 ### Example Usage
 
 **Start new session:**
-```typescript
-mcp_codex_codex({
+```
+mcp__codex__codex({
   PROMPT: "分析用户登录功能的安全需求...",
   cd: "/path/to/project",
   sandbox: "read-only"
@@ -83,29 +91,13 @@ mcp_codex_codex({
 ```
 
 **Continue session:**
-```typescript
-mcp_codex_codex({
+```
+mcp__codex__codex({
   PROMPT: "基于上述分析，生成认证模块的代码原型",
   cd: "/path/to/project",
   sandbox: "read-only",
   SESSION_ID: "previous-session-id"
 })
-```
-
----
-
-## TDD Configuration
-
-Configure TDD validation in `.env`:
-
-```bash
-# Validation client: 'api' or 'sdk'
-TDD_VALIDATION_CLIENT=sdk
-
-# API Provider: 'anthropic', 'openrouter', 'google', 'openai-compatible'
-TDD_API_PROVIDER=anthropic
-
-# See .env.example for full configuration options
 ```
 
 ---
@@ -127,4 +119,8 @@ The `.fusion/` directory stores:
 - `status.json`: Task completion status with Git SHA
 - `codex-sessions.json`: Persistent Codex session IDs
 
-**Note**: Add `.fusion/` to `.gitignore` for ephemeral data, or commit for team sharing.
+**Note**: Add `.fusion/` to `.gitignore` for ephemeral data.
+
+## License
+
+MIT
