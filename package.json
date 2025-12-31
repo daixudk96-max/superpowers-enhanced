@@ -6,7 +6,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "superpowers-fusion": "./dist/cli/init.js"
+    "superpowers-fusion": "./dist/src/cli/index.js"
   },
   "scripts": {
     "build": "tsc",
