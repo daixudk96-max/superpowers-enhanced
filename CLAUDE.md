@@ -116,8 +116,8 @@ TDD_API_PROVIDER=anthropic
 |---------|-------------|
 | `/setup` | Initialize context/ directory with templates. Detects tech stack interactively (use `--no-interactive` to skip) |
 | `/new-change <name>` | Create new change in changes/ |
-| `/status` | Show project status: active change, task progress, available changes |
-| `/implement [change]` | Select change to implement, show progress, prepare for execution |
+| `/status` | Show project status: active change, task progress, blockers, next action |
+| `/implement [change]` | Select change and execute all tasks in a loop until complete |
 | `/archive <name>` | Archive completed change with metadata.json. Uses AI to suggest context/ doc updates (skip with `--skip-docs`) |
 | `/revert [change\|phase\|task] <id>` | Revert to previous state |
 
