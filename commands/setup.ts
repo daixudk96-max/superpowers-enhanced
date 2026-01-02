@@ -1,5 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
+import readline from "node:readline/promises";
+import { stdin as input, stdout as output } from "node:process";
+import {
+    detectBrownfield,
+    detectTechStack,
+    type BrownfieldInfo,
+    type TechStack,
+} from "../lib/tech-detector.js";
 import { getCommandPrompt } from "./utils/prompt-reader.js";
 
 const TEMPLATES = {
@@ -111,15 +119,120 @@ export interface SetupResult {
     created: string[];
     skipped: string[];
     prompt?: string;
+    detection?: {
+        brownfield: BrownfieldInfo;
+        techStack: TechStack;
+    };
+}
+
+export interface SetupOptions {
+    /** Run in interactive mode (default: true) */
+    interactive?: boolean;
+}
+
+/**
+ * Detect project context and optionally confirm with user
+ */
+async function detectAndConfirm(
+    projectDir: string,
+    interactive: boolean
+): Promise<{ brownfield: BrownfieldInfo; techStack: TechStack }> {
+    const brownfield = detectBrownfield(projectDir);
+    let techStack = detectTechStack(projectDir);
+
+    // Non-interactive mode: return detected values directly
+    if (!interactive) {
+        console.log("📊 Project Detection (non-interactive):");
+        console.log(`   - Brownfield: ${brownfield.isBrownfield ? "yes" : "no"}`);
+        console.log(`   - Language: ${techStack.language}`);
+        console.log(`   - Frameworks: ${techStack.frameworks.join(", ") || "none"}`);
+        console.log(`   - Test runner: ${techStack.testRunner ?? "unknown"}`);
+        console.log(`   - Build tool: ${techStack.buildTool ?? "unknown"}`);
+        return { brownfield, techStack };
+    }
+
+    // Interactive mode: show detection and allow user to modify
+    const rl = readline.createInterface({ input, output });
+
+    const ask = async (label: string, current: string): Promise<string> => {
+        const suffix = current ? ` [${current}]` : "";
+        const answer = await rl.question(`${label}${suffix}: `);
+        return answer.trim() === "" ? current : answer.trim();
+    };
+
+    console.log("\n📊 Detected project context:");
+    console.log(
+        `   - Brownfield: ${brownfield.isBrownfield ? "yes" : "no"}${brownfield.indicators.length ? ` (${brownfield.indicators.join(", ")})` : ""
+        }`
+    );
+    console.log(`   - Language: ${techStack.language}`);
+    console.log(`   - Frameworks: ${techStack.frameworks.join(", ") || "none"}`);
+    console.log(`   - Test runner: ${techStack.testRunner ?? "unknown"}`);
+    console.log(`   - Build tool: ${techStack.buildTool ?? "unknown"}`);
+
+    console.log("\n📝 Press Enter to accept detected values, or type to override:\n");
+
+    try {
+        const languageInput = (
+            await ask("Language (typescript/javascript/unknown)", techStack.language)
+        ).toLowerCase();
+        const normalizedLanguage: TechStack["language"] =
+            languageInput === "typescript" || languageInput === "javascript"
+                ? (languageInput as TechStack["language"])
+                : "unknown";
+
+        const frameworksInput = await ask(
+            "Frameworks (comma-separated)",
+            techStack.frameworks.join(", ")
+        );
+        const frameworks = frameworksInput
+            .split(",")
+            .map((f) => f.trim())
+            .filter(Boolean);
+
+        const testRunnerInput = await ask("Test runner", techStack.testRunner ?? "");
+        const buildToolInput = await ask("Build tool", techStack.buildTool ?? "");
+
+        techStack = {
+            language: normalizedLanguage,
+            frameworks,
+            testRunner: testRunnerInput || null,
+            buildTool: buildToolInput || null,
+        };
+
+        return { brownfield, techStack };
+    } finally {
+        rl.close();
+    }
 }
 
 /**
  * Setup command handler - creates context directory with templates
  */
-export async function setup(projectDir: string): Promise<SetupResult> {
+export async function setup(
+    projectDir: string,
+    options: SetupOptions = {}
+): Promise<SetupResult> {
+    const interactive = options.interactive ?? true;
     const contextDir = path.join(projectDir, "context");
     const created: string[] = [];
     const skipped: string[] = [];
+
+    // Detect project context
+    const detection = await detectAndConfirm(projectDir, interactive);
+
+    // Ensure state directories exist
+    const fusionDir = path.join(projectDir, ".fusion");
+    if (!fs.existsSync(fusionDir)) {
+        fs.mkdirSync(fusionDir, { recursive: true });
+        console.log("📁 Created .fusion/ directory");
+    }
+
+    const changesDir = path.join(projectDir, "changes");
+    if (!fs.existsSync(changesDir)) {
+        fs.mkdirSync(changesDir, { recursive: true });
+        console.log("📁 Created changes/ directory");
+    }
 
     // Create context directory if not exists
     if (!fs.existsSync(contextDir)) {
@@ -141,15 +254,21 @@ export async function setup(projectDir: string): Promise<SetupResult> {
     // Get the next-step prompt from setup.md
     const prompt = getCommandPrompt("setup") ?? undefined;
 
-    return { created, skipped, prompt };
+    return { created, skipped, prompt, detection };
 }
 
 // CLI handler
-if (import.meta.url === `file://${process.argv[1]}`) {
+const isCLI =
+    import.meta.url === `file://${process.argv[1]}` ||
+    process.argv[1].endsWith("setup.ts");
+
+if (isCLI) {
     const projectDir = process.cwd();
-    setup(projectDir).then((result) => {
+    const interactive = !process.argv.includes("--no-interactive");
+
+    setup(projectDir, { interactive }).then((result) => {
         if (result.created.length > 0) {
-            console.log("✅ Created context files:");
+            console.log("\n✅ Created context files:");
             result.created.forEach((f) => console.log(`   - context/${f}`));
         }
         if (result.skipped.length > 0) {
@@ -163,4 +282,3 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         }
     });
 }
-

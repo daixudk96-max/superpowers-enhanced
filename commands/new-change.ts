@@ -98,7 +98,8 @@ export async function newChange(
 }
 
 // CLI handler
-if (import.meta.url === `file://${process.argv[1]}`) {
+const isCLI = import.meta.url === `file://${process.argv[1]}` || process.argv[1].endsWith('new-change.ts');
+if (isCLI) {
     const name = process.argv[2];
     if (!name) {
         console.error("Usage: new-change <name>");
