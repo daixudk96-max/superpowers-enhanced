@@ -122,6 +122,41 @@ TDD is strictly enforced via hooks.
             result.created.push('.env.example');
         }
 
+        // 5. Setup .env with TDD defaults (Task 4.1)
+        const envPath = path.join(projectDir, '.env');
+        const tddDefaults: Record<string, string> = {
+            'TDD_VALIDATION_ENABLED': 'true',
+            'TDD_VALIDATION_CLIENT': 'sdk',
+            'TDD_AST_CHECKS_ENABLED': 'true',
+            'TDD_DEFAULT_TIER': '2',
+            'TDD_REJECT_EMPTY_TESTS': 'true',
+            'TDD_REJECT_MISSING_ASSERTIONS': 'true',
+            'TDD_REJECT_TRIVIAL_ASSERTIONS': 'true',
+        };
+
+        let envContent = '';
+        let envUpdated = false;
+
+        if (fs.existsSync(envPath)) {
+            envContent = fs.readFileSync(envPath, 'utf8');
+        }
+
+        // Add missing TDD config entries
+        for (const [key, value] of Object.entries(tddDefaults)) {
+            if (!envContent.includes(`${key}=`)) {
+                envContent += `${key}=${value}\n`;
+                envUpdated = true;
+            }
+        }
+
+        if (envUpdated) {
+            fs.writeFileSync(envPath, envContent);
+            result.updated.push('.env (TDD defaults added)');
+        } else if (!fs.existsSync(envPath)) {
+            fs.writeFileSync(envPath, Object.entries(tddDefaults).map(([k, v]) => `${k}=${v}`).join('\n') + '\n');
+            result.created.push('.env');
+        }
+
     } catch (error) {
         result.success = false;
         result.errors.push(String(error));

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { initializeStatus } from "../lib/task-status-tracker.js";
+import { getCommandPrompt } from "./utils/prompt-reader.js";
 
 const PROPOSAL_TEMPLATE = `# Change: {{name}}
 
@@ -43,6 +44,7 @@ export interface NewChangeResult {
     success: boolean;
     path?: string;
     error?: string;
+    prompt?: string;
 }
 
 /**
@@ -79,9 +81,13 @@ export async function newChange(
         // Initialize status tracking
         initializeStatus(name);
 
+        // Get the next-step prompt from new-change.md
+        const prompt = getCommandPrompt("new-change") ?? undefined;
+
         return {
             success: true,
             path: changeDir,
+            prompt,
         };
     } catch (error) {
         return {
@@ -103,9 +109,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     newChange(changesDir, name).then((result) => {
         if (result.success) {
             console.log(`✅ Created change: ${result.path}`);
+            // Output next-step prompt for Agent
+            if (result.prompt) {
+                console.log("\n📋 Next Steps:");
+                console.log(result.prompt);
+            }
         } else {
             console.error(`❌ Error: ${result.error}`);
             process.exit(1);
         }
     });
 }
+

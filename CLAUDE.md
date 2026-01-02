@@ -128,3 +128,7 @@ The `.fusion/` directory stores:
 - `codex-sessions.json`: Persistent Codex session IDs
 
 **Note**: Add `.fusion/` to `.gitignore` for ephemeral data, or commit for team sharing.
+
+## Superpowers-Fusion
+Use /setup, /new-change, /archive, /revert to manage your workflow.
+TDD is strictly enforced via hooks.

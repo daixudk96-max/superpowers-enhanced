@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { getCommandPrompt } from "./utils/prompt-reader.js";
 
 const TEMPLATES = {
     "product.md": `# Product Context
@@ -109,6 +110,7 @@ const TEMPLATES = {
 export interface SetupResult {
     created: string[];
     skipped: string[];
+    prompt?: string;
 }
 
 /**
@@ -136,7 +138,10 @@ export async function setup(projectDir: string): Promise<SetupResult> {
         }
     }
 
-    return { created, skipped };
+    // Get the next-step prompt from setup.md
+    const prompt = getCommandPrompt("setup") ?? undefined;
+
+    return { created, skipped, prompt };
 }
 
 // CLI handler
@@ -151,5 +156,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
             console.log("⏭️  Skipped (already exist):");
             result.skipped.forEach((f) => console.log(`   - context/${f}`));
         }
+        // Output next-step prompt for Agent
+        if (result.prompt) {
+            console.log("\n📋 Next Steps:");
+            console.log(result.prompt);
+        }
     });
 }
+

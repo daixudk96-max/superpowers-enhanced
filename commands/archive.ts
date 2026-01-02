@@ -10,11 +10,57 @@ export interface ArchiveResult {
     archivePath?: string;
     error?: string;
     metadata?: ArchiveMetadata;
+    checkpointSha?: string;
 }
 
 export interface ArchiveOptions {
     yes?: boolean;
     createTag?: boolean;
+    createCheckpoint?: boolean;
+    phaseName?: string;
+    summary?: string;
+}
+
+/**
+ * Create a checkpoint commit for completed phase.
+ * Returns the short SHA (7 characters) of the commit.
+ */
+export function createCheckpointCommit(phaseName: string): string | null {
+    try {
+        // Stage all changes
+        execSync("git add .", { stdio: "pipe" });
+
+        // Create checkpoint commit (allow empty in case everything is already committed)
+        const message = `checkpoint(${phaseName}): Phase complete`;
+        execSync(`git commit --allow-empty -m "${message}"`, { stdio: "pipe" });
+
+        // Get the short SHA
+        const sha = execSync("git rev-parse --short HEAD", { stdio: "pipe" })
+            .toString()
+            .trim();
+
+        console.log(`[Checkpoint] Created commit: ${sha}`);
+        return sha;
+    } catch (error) {
+        console.warn(`[Checkpoint] Failed to create commit: ${error}`);
+        return null;
+    }
+}
+
+/**
+ * Attach a git note to a commit with task summary.
+ */
+export function attachGitNote(commitSha: string, summary: string): boolean {
+    try {
+        // Escape quotes in summary for shell
+        const escapedSummary = summary.replace(/"/g, '\\"');
+        execSync(`git notes add -m "${escapedSummary}" ${commitSha}`, { stdio: "pipe" });
+        console.log(`[Checkpoint] Attached note to ${commitSha}`);
+        return true;
+    } catch (error) {
+        console.warn(`[Checkpoint] Failed to attach note: ${error}`);
+        return false;
+    }
 }
 
 /**
@@ -39,7 +85,6 @@ export async function archive(
     const tasksFile = path.join(sourceDir, "tasks.md");
     if (fs.existsSync(tasksFile)) {
         const content = fs.readFileSync(tasksFile, "utf8");
-        // const taskIds = parseTaskIds(content);
         const incompleteCount = countIncompleteTasks(content);
 
         if (incompleteCount > 0 && !options.yes) {
@@ -50,7 +95,23 @@ export async function archive(
         }
     }
 
+    let checkpointSha: string | undefined;
+
     try {
+        // NEW: Create checkpoint commit if requested
+        if (options.createCheckpoint) {
+            const phaseName = options.phaseName ?? changeName;
+            const sha = createCheckpointCommit(phaseName);
+            if (sha) {
+                checkpointSha = sha;
+
+                // Attach git note with summary if provided
+                if (options.summary) {
+                    attachGitNote(sha, options.summary);
+                }
+            }
+        }
+
         // Perform archive
         const archivePath = await archiveChange(changeName, sourceDir);
 
@@ -75,6 +136,7 @@ export async function archive(
         return {
             success: true,
             archivePath,
+            checkpointSha,
         };
     } catch (error) {
         return {
@@ -83,21 +145,6 @@ export async function archive(
         };
     }
 }
-
-/**
- * Parse task IDs from tasks.md content
- */
-// function parseTaskIds(content: string): string[] {
-//     const taskPattern = /- \[[x ]\] (\d+\.\d+)/gi;
-//     const ids: string[] = [];
-//     let match;
-//
-//     while ((match = taskPattern.exec(content)) !== null) {
-//         ids.push(match[1]);
-//     }
-//
-//     return ids;
-// }
 
 /**
  * Count incomplete tasks
@@ -113,19 +160,24 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const changeName = process.argv[2];
     const yes = process.argv.includes("--yes");
     const createTag = process.argv.includes("--tag");
+    const createCheckpoint = process.argv.includes("--checkpoint");
 
     if (!changeName) {
-        console.error("Usage: archive <change-name> [--yes] [--tag]");
+        console.error("Usage: archive <change-name> [--yes] [--tag] [--checkpoint]");
         process.exit(1);
     }
 
     const changesDir = path.join(process.cwd(), "changes");
-    archive(changesDir, changeName, { yes, createTag }).then((result) => {
+    archive(changesDir, changeName, { yes, createTag, createCheckpoint }).then((result) => {
         if (result.success) {
             console.log(`✅ Archived to: ${result.archivePath}`);
+            if (result.checkpointSha) {
+                console.log(`📍 Checkpoint: ${result.checkpointSha}`);
+            }
         } else {
             console.error(`❌ Error: ${result.error}`);
             process.exit(1);
         }
     });
 }
+

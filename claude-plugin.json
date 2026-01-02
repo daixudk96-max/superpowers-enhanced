@@ -10,7 +10,7 @@
     "entry_points": {
         "skills": "./skills",
         "hooks": "./dist/hooks/index.js",
-        "commands": "./dist/commands/index.js"
+        "commands": "./commands"
     },
     "permissions": {
         "file_system": [
