@@ -116,7 +116,7 @@ TDD_API_PROVIDER=anthropic
 |---------|-------------|
 | `/setup` | Initialize context/ directory with templates |
 | `/new-change <name>` | Create new change in changes/ |
-| `/archive <name>` | Archive completed change with metadata.json |
+| `/archive <name>` | Archive completed change with metadata.json. Uses AI to suggest context/ doc updates (skip with `--skip-docs`) |
 | `/revert [change\|phase\|task] <id>` | Revert to previous state |
 
 ---

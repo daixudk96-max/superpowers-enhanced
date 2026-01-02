@@ -1,14 +1,14 @@
-import FusionVitestReporter from 'superpowers-fusion/lib/vitest-reporter';
+import FusionVitestReporter from './lib/vitest-reporter.js';
 
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  reporters: [
-    'default',
-    new FusionVitestReporter(),
-  ],
   test: {
     include: ['tests/**/*.test.ts'],
     globals: true,
+    reporters: [
+      'default',
+      new FusionVitestReporter(),
+    ],
   },
 });

@@ -1,9 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
+import readline from "node:readline";
 import { execSync } from "node:child_process";
 import { archiveChange, type ArchiveMetadata } from "../lib/archive-manager.js";
 import { resetStatus } from "../lib/task-status-tracker.js";
 import { cleanupSessionsForChange } from "../lib/codex-session.js";
+import { syncContextDocs, formatDiffs, applyDocUpdates } from "../lib/doc-sync.js";
 
 export interface ArchiveResult {
     success: boolean;
@@ -19,6 +21,7 @@ export interface ArchiveOptions {
     createCheckpoint?: boolean;
     phaseName?: string;
     summary?: string;
+    skipDocs?: boolean;
 }
 
 /**
@@ -98,7 +101,35 @@ export async function archive(
     let checkpointSha: string | undefined;
 
     try {
-        // NEW: Create checkpoint commit if requested
+        // Document synchronization before checkpoint
+        if (!options.skipDocs) {
+            const contextDir = path.join(path.dirname(changesDir), "context");
+            if (fs.existsSync(contextDir)) {
+                console.log("[Archive] Analyzing change for context document updates...");
+                const updates = await syncContextDocs({
+                    changeDir: sourceDir,
+                    contextDir,
+                });
+
+                if (updates.length > 0) {
+                    console.log("\n📄 Suggested context document updates:\n");
+                    console.log(formatDiffs(updates));
+                    console.log("");
+
+                    const shouldApply = options.yes || await promptYesNo("Apply these updates? (y/n): ");
+                    if (shouldApply) {
+                        applyDocUpdates(updates, contextDir);
+                        console.log("[Archive] Context documents updated.");
+                    } else {
+                        console.log("[Archive] Skipped context document updates.");
+                    }
+                } else {
+                    console.log("[Archive] No context document updates needed.");
+                }
+            }
+        }
+
+        // Create checkpoint commit if requested
         if (options.createCheckpoint) {
             const phaseName = options.phaseName ?? changeName;
             const sha = createCheckpointCommit(phaseName);
@@ -161,14 +192,15 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     const yes = process.argv.includes("--yes");
     const createTag = process.argv.includes("--tag");
     const createCheckpoint = process.argv.includes("--checkpoint");
+    const skipDocs = process.argv.includes("--skip-docs");
 
     if (!changeName) {
-        console.error("Usage: archive <change-name> [--yes] [--tag] [--checkpoint]");
+        console.error("Usage: archive <change-name> [--yes] [--tag] [--checkpoint] [--skip-docs]");
         process.exit(1);
     }
 
     const changesDir = path.join(process.cwd(), "changes");
-    archive(changesDir, changeName, { yes, createTag, createCheckpoint }).then((result) => {
+    archive(changesDir, changeName, { yes, createTag, createCheckpoint, skipDocs }).then((result) => {
         if (result.success) {
             console.log(`✅ Archived to: ${result.archivePath}`);
             if (result.checkpointSha) {
@@ -181,3 +213,19 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     });
 }
 
+/**
+ * Prompt user for yes/no confirmation
+ */
+async function promptYesNo(message: string): Promise<boolean> {
+    return new Promise((resolve) => {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
+        rl.question(message, (answer) => {
+            rl.close();
+            const normalized = answer.trim().toLowerCase();
+            resolve(normalized === "y" || normalized === "yes");
+        });
+    });
+}
