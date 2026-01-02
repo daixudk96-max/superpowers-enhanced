@@ -61,12 +61,12 @@ export async function initCommand(args: string[]): Promise<void> {
             settings.hooks = settings.hooks || {};
             settings.hooks.PreToolUse = settings.hooks.PreToolUse || [];
 
-            // Check if hook already exists
-            const existingHookIndex = settings.hooks.PreToolUse.findIndex((h: any) =>
+            // 1a. Register PreToolUse (TDD Hook)
+            const existingTddHookIndex = settings.hooks.PreToolUse.findIndex((h: any) =>
                 h.hooks && h.hooks.some((hook: any) => hook.command && hook.command.includes('superpowers-fusion verify-tdd'))
             );
 
-            const hookConfig = {
+            const tddHookConfig = {
                 matcher: "Edit|Write",
                 hooks: [
                     {
@@ -76,13 +76,37 @@ export async function initCommand(args: string[]): Promise<void> {
                 ]
             };
 
-            if (existingHookIndex === -1) {
-                settings.hooks.PreToolUse.push(hookConfig);
-                fs.writeFileSync(claudeSettingsPath, JSON.stringify(settings, null, 2));
+            if (existingTddHookIndex === -1) {
+                settings.hooks.PreToolUse.push(tddHookConfig);
                 result.updated.push('~/.claude/settings.json (TDD hooks added)');
             } else {
-                result.skipped.push('~/.claude/settings.json (Hooks already configured)');
+                result.skipped.push('~/.claude/settings.json (TDD Hooks already configured)');
             }
+
+            // 1b. Register SessionStart Hook (Task 4.2)
+            settings.hooks.SessionStart = settings.hooks.SessionStart || [];
+            const existingSessionHookIndex = settings.hooks.SessionStart.findIndex((h: any) =>
+                h.command && h.command.includes('session-start.sh')
+            );
+
+            if (existingSessionHookIndex === -1) {
+                // Determine absolute path to hook script
+                // In production, it will be in dist/src/hooks, but for now we look in fusionRoot
+                const hookPath = path.join(fusionRoot, 'hooks', 'session-start.sh');
+
+                // On Windows, use 'bash' to run the script if it's .sh
+                const cmd = process.platform === 'win32' ? `bash "${hookPath}"` : `"${hookPath}"`;
+
+                settings.hooks.SessionStart.push({
+                    type: "command",
+                    command: cmd
+                });
+                result.updated.push('~/.claude/settings.json (SessionStart hook added)');
+            } else {
+                result.skipped.push('~/.claude/settings.json (SessionStart Hook already configured)');
+            }
+
+            fs.writeFileSync(claudeSettingsPath, JSON.stringify(settings, null, 2));
         }
 
         // 2. Create .fusion directory
