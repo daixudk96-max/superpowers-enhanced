@@ -2,6 +2,7 @@ import { execSync } from "node:child_process";
 import { loadConfig } from "../lib/config-loader.js";
 import { checkTestQuality } from "../lib/test-quality-checker.js";
 import { isTestFile } from "../lib/language-adapter.js";
+import { runPostToolEditPipeline } from "../lib/pipeline.js";
 
 export interface PostToolEditEvent {
     toolName: string;
@@ -110,4 +111,54 @@ export function recordTaskCompletion(
     // This would update .fusion/status.json
     // Implementation handled by status-tracker module
     console.log(`[TDD] Task ${taskId} completed with SHA: ${sha.slice(0, 8)}`);
+}
+
+/**
+ * NEW: Pipeline-based PostToolEdit Hook
+ * 
+ * Runs lint-on-green using the new pipeline architecture.
+ * This triggers ESLint after successful edits when tests are passing.
+ */
+export async function postToolEditWithPipeline(event: PostToolEditEvent): Promise<PostToolEditResult> {
+    const config = loadConfig();
+    const result: PostToolEditResult = {};
+
+    // Run existing quality checks
+    if (config.tdd.astChecks && isTestFile(event.filePath) && event.content) {
+        const quality = checkTestQuality(event.content, event.filePath, {
+            rejectEmptyTests: config.tdd.rejectEmptyTests,
+            rejectMissingAssertions: config.tdd.rejectMissingAssertions,
+            rejectTrivialAssertions: config.tdd.rejectTrivialAssertions,
+        });
+
+        if (!quality.ok) {
+            result.testIssues = quality.errors;
+        }
+    }
+
+    // Run lint-on-green pipeline if tests are passing
+    if (config.tdd.lintOnGreen && event.testOutput) {
+        const testsPassing = parseTestOutput(event.testOutput);
+        result.testsPassing = testsPassing;
+
+        if (testsPassing) {
+            // Run PostToolEdit pipeline (ESLint)
+            const lintResult = await runPostToolEditPipeline([event.filePath]);
+            if (lintResult.linted && lintResult.issues > 0) {
+                console.log(`[TDD] Lint-on-green: ${lintResult.issues} issues found`);
+            }
+        }
+    }
+
+    // Record Git SHA
+    try {
+        result.gitSha = execSync("git rev-parse HEAD", {
+            encoding: "utf8",
+            stdio: ["pipe", "pipe", "pipe"],
+        }).trim();
+    } catch {
+        // Git may be unavailable
+    }
+
+    return result;
 }

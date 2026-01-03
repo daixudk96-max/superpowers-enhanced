@@ -3,6 +3,7 @@ import { initCommand } from './init.js';
 import { verifyTddCommand } from './verify-tdd.js';
 import { installReporterCommand } from './install-reporter.js';
 import { openspecValidateCommand } from './openspec-validate.js';
+import { tddToggleCommand } from './tdd-toggle.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -16,6 +17,9 @@ switch (command) {
         break;
     case 'install-reporter':
         installReporterCommand();
+        break;
+    case 'tdd-toggle':
+        tddToggleCommand(args.slice(1));
         break;
     case 'openspec':
         if (args[1] === 'validate') {
@@ -32,7 +36,9 @@ switch (command) {
         console.log('  superpowers-fusion init                      Initialize project with TDD hooks');
         console.log('  superpowers-fusion verify-tdd                Run TDD verification (used by hooks)');
         console.log('  superpowers-fusion install-reporter          Set up Vitest/Jest reporter');
+        console.log('  superpowers-fusion tdd-toggle [on|off]       Enable/disable TDD guard');
         console.log('  superpowers-fusion openspec validate <id>    Validate OpenSpec change');
         process.exit(1);
 }
+
 

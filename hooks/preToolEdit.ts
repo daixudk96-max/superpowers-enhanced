@@ -5,6 +5,7 @@ import { determineRiskTier, shouldBlockEdit } from "../lib/risk-validator.js";
 import { isTestFile } from "../lib/language-adapter.js";
 import { validateWithAI } from "../lib/api-client.js";
 import { checkTestQuality } from "../lib/test-quality-checker.js";
+import { runPreToolEditPipeline, type PipelineResult } from "../lib/pipeline.js";
 
 export interface PreToolEditEvent {
     toolName: string;
@@ -162,3 +163,36 @@ export function hasExemptionComment(content: string): boolean {
     return /<!--\s*TDD-EXEMPT:/.test(content) || /\/\/\s*TDD-EXEMPT:/.test(content);
 }
 
+/**
+ * NEW: Pipeline-based PreToolEdit Hook
+ * 
+ * Uses the new modular pipeline architecture from tdd-guard integration.
+ * This provides workflow-aware TDD enforcement with ignore patterns and lint integration.
+ */
+export async function preToolEditWithPipeline(event: PreToolEditEvent): Promise<PreToolEditResult> {
+    // Always allow test file edits
+    if (isTestFile(event.filePath)) {
+        return { allowed: true, reason: "Test file edits always allowed" };
+    }
+
+    // Run the new pipeline
+    const pipelineResult: PipelineResult = await runPreToolEditPipeline(event.filePath);
+
+    // Log notifications
+    for (const notification of pipelineResult.notifications) {
+        console.log(notification);
+    }
+
+    // Convert pipeline result to PreToolEditResult
+    if (pipelineResult.blocked) {
+        return {
+            allowed: false,
+            reason: pipelineResult.reason,
+        };
+    }
+
+    return {
+        allowed: true,
+        reason: pipelineResult.reason,
+    };
+}

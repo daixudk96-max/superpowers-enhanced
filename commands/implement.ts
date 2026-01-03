@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { loadStatus, initializeStatus, type StatusData } from "../lib/task-status-tracker.js";
 import { getCommandPrompt } from "./utils/prompt-reader.js";
+import { WorkflowMiddleware } from "../lib/workflow-middleware.js";
 
 /**
  * Implementation result
@@ -126,6 +127,23 @@ export function implement(
         },
         prompt,
     };
+}
+
+/**
+ * Async implement with workflow phase tracking
+ * 
+ * Sets the workflow phase to 'implement' for TDD enforcement.
+ */
+export async function implementWithWorkflow(
+    projectDir: string = process.cwd(),
+    changeArg?: string
+): Promise<ImplementResult> {
+    // Set workflow phase for TDD enforcement
+    const middleware = new WorkflowMiddleware();
+    await middleware.setPhase("implement");
+
+    // Run normal implement logic
+    return implement(projectDir, changeArg);
 }
 
 /**

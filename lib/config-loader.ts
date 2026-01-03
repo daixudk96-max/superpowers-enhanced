@@ -25,6 +25,19 @@ export interface TddConfig {
     rejectEmptyTests: boolean;
     rejectMissingAssertions: boolean;
     rejectTrivialAssertions: boolean;
+    // --- New fields for tdd-guard feature migration ---
+    /** Linter to use after edits: "eslint" or "none" */
+    linterType: "eslint" | "none";
+    /** Run linter when tests pass (refactor phase) */
+    lintOnGreen: boolean;
+    /** Block edit if lint errors exist (after first notification) */
+    lintBlock: boolean;
+    /** Enable Risk Tier-based TDD enforcement */
+    riskTierEnabled: boolean;
+    /** Minimum tier that requires TDD enforcement (0-3) */
+    minEnforceTier: number;
+    /** Glob patterns for files to ignore (e.g., ["*.md", "*.json"]) */
+    ignorePatterns: string[];
 }
 
 export interface RuntimeConfig {
@@ -35,6 +48,17 @@ export interface RuntimeConfig {
 }
 
 const env = process.env;
+
+/** Default ignore patterns for files that don't require TDD */
+const DEFAULT_IGNORE_PATTERNS = ["*.md", "*.json", "*.yml", "*.yaml", "*.css", "*.scss", "*.svg"];
+
+/**
+ * Parse comma-separated patterns from environment variable
+ */
+function parsePatterns(value: string | undefined): string[] {
+    if (!value) return DEFAULT_IGNORE_PATTERNS;
+    return value.split(",").map((p) => p.trim()).filter(Boolean);
+}
 
 /**
  * Load configuration from .env file with sensible defaults.
@@ -51,6 +75,13 @@ export function loadConfig(): RuntimeConfig {
             rejectEmptyTests: env.TDD_REJECT_EMPTY_TESTS !== "false",
             rejectMissingAssertions: env.TDD_REJECT_MISSING_ASSERTIONS !== "false",
             rejectTrivialAssertions: env.TDD_REJECT_TRIVIAL_ASSERTIONS !== "false",
+            // --- New fields for tdd-guard feature migration ---
+            linterType: (env.TDD_LINTER_TYPE as "eslint" | "none" | undefined) ?? "none",
+            lintOnGreen: env.TDD_LINT_ON_GREEN !== "false",
+            lintBlock: env.TDD_LINT_BLOCK === "true",
+            riskTierEnabled: env.TDD_RISK_TIER_ENABLED !== "false",
+            minEnforceTier: parseInt(env.TDD_MIN_ENFORCE_TIER ?? "2", 10),
+            ignorePatterns: parsePatterns(env.TDD_IGNORE_PATTERNS),
         },
         provider: buildProviderConfig(provider),
         fusionStateDir: env.FUSION_STATE_DIR ?? ".fusion",

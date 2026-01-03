@@ -108,6 +108,52 @@ TDD_API_PROVIDER=anthropic
 # See .env.example for full configuration options
 ```
 
+### TDD Guard Toggle
+
+Control TDD enforcement at runtime:
+
+```bash
+# CLI commands
+npx ts-node src/cli/tdd-toggle.ts on       # Enable TDD guard
+npx ts-node src/cli/tdd-toggle.ts off      # Disable TDD guard  
+npx ts-node src/cli/tdd-toggle.ts status   # Check current status
+
+# Chat commands (in dialog)
+"tdd on"      # Enable
+"tdd off"     # Disable
+"tdd status"  # Check status
+```
+
+### ESLint Integration
+
+Lint-on-green runs ESLint after edits when tests pass:
+
+```bash
+TDD_LINTER_TYPE=eslint       # Enable ESLint (default: none)
+TDD_LINT_ON_GREEN=true       # Run lint after green tests
+TDD_LINT_BLOCK=false         # Block on lint errors (default: warn)
+```
+
+### Ignore Patterns
+
+Skip TDD enforcement for specific file patterns:
+
+```bash
+TDD_IGNORE_PATTERNS=*.md,*.json,*.yml,*.yaml,*.css,*.scss,*.svg
+```
+
+### Workflow-Aware Enforcement
+
+TDD enforcement adjusts by workflow phase:
+
+| Phase | TDD Level | Blocks on Failure |
+|-------|-----------|------------------|
+| `brainstorming` | Disabled | No |
+| `writing-plans` | Disabled | No |
+| `implement` | Enforced | Yes (Tier 2+) |
+| `executing-plans` | Enforced | Yes (Tier 2+) |
+| `verification` | Check only | No |
+
 ---
 
 ## Commands
