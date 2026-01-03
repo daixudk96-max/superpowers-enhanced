@@ -2,20 +2,35 @@ import type { Reporter, File as VitestFile, Task as VitestTask } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 
-export interface TestResult {
-    name: string;
-    status: "pass" | "fail" | "skip";
-    duration: number;
-    error?: string;
+export interface TestResultError {
+    message: string;
+    expected?: string;
+    actual?: string;
+    stack?: string;
 }
 
-export interface TestReport {
+export interface TestResult {
+    name: string;
+    fullName?: string;
+    status: "pass" | "fail" | "skip";
+    duration: number;
+    error?: TestResultError;
+}
+
+/**
+ * Unified Test Report matching UnifiedTestReportSchema
+ */
+export interface UnifiedTestReport {
     timestamp: string;
     duration: number;
-    passed: number;
-    failed: number;
-    skipped: number;
+    summary: {
+        passed: number;
+        failed: number;
+        skipped: number;
+    };
+    reason: "passed" | "failed" | "interrupted" | "unknown";
     tests: TestResult[];
+    unhandledErrors?: unknown[];
 }
 
 /**
@@ -57,12 +72,15 @@ export default class FusionVitestReporter implements Reporter {
         const failed = this.results.filter((t) => t.status === "fail").length;
         const skipped = this.results.filter((t) => t.status === "skip").length;
 
-        const report: TestReport = {
+        const report: UnifiedTestReport = {
             timestamp: new Date().toISOString(),
             duration,
-            passed,
-            failed,
-            skipped,
+            summary: {
+                passed,
+                failed,
+                skipped,
+            },
+            reason: failed > 0 ? "failed" : "passed",
             tests: this.results,
         };
 
@@ -101,11 +119,16 @@ export default class FusionVitestReporter implements Reporter {
                     ? "fail"
                     : "skip";
 
+        const errorObj = result?.errors?.[0];
         this.results.push({
-            name: `${fileName} > ${task.name}`,
+            name: task.name,
+            fullName: `${fileName} > ${task.name}`,
             status,
             duration: result?.duration ?? 0,
-            error: result?.errors?.[0]?.message,
+            error: errorObj ? {
+                message: errorObj.message,
+                stack: errorObj.stack,
+            } : undefined,
         });
     }
 }

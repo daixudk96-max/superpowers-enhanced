@@ -20,9 +20,20 @@ export interface BrownfieldInfo {
 /**
  * Detected technology stack information
  */
+export type SupportedLanguage =
+    | "typescript"
+    | "javascript"
+    | "python"
+    | "go"
+    | "ruby"
+    | "rust"
+    | "php"
+    | "java"
+    | "unknown";
+
 export interface TechStack {
     /** Primary programming language */
-    language: "typescript" | "javascript" | "unknown";
+    language: SupportedLanguage;
     /** Detected frameworks (React, Vue, Next.js, etc.) */
     frameworks: string[];
     /** Test runner (vitest, jest, etc.) */
@@ -57,6 +68,37 @@ function readJsonIfExists(filePath: string): Record<string, unknown> | null {
     } catch {
         return null;
     }
+}
+
+/**
+ * Read file content safely
+ */
+function readFileIfExists(filePath: string): string | null {
+    if (!fs.existsSync(filePath)) {
+        return null;
+    }
+
+    try {
+        return fs.readFileSync(filePath, "utf8");
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Check if a file contains a keyword (case-insensitive by default)
+ */
+function fileContains(projectDir: string, relativePath: string, keyword: string | RegExp): boolean {
+    const target = path.join(projectDir, relativePath);
+    const content = readFileIfExists(target);
+    if (content === null) {
+        return false;
+    }
+
+    if (keyword instanceof RegExp) {
+        return keyword.test(content);
+    }
+    return content.toLowerCase().includes(keyword.toLowerCase());
 }
 
 /**
@@ -96,17 +138,21 @@ function collectDependencies(pkg: Record<string, unknown> | null): Set<string> {
 export function detectBrownfield(projectDir: string): BrownfieldInfo {
     const indicators: string[] = [];
 
-    const checks: Array<[string, string]> = [
-        [".git", ".git directory"],
-        ["package.json", "package.json"],
-        ["src", "src directory"],
-        ["app", "app directory"],
-        ["lib", "lib directory"],
-        ["tsconfig.json", "tsconfig.json"],
-        ["requirements.txt", "requirements.txt"],
-        ["pom.xml", "pom.xml"],
-        ["go.mod", "go.mod"],
-    ];
+const checks: Array<[string, string]> = [
+    [".git", ".git directory"],
+    ["package.json", "package.json"],
+    ["src", "src directory"],
+    ["app", "app directory"],
+    ["lib", "lib directory"],
+    ["tsconfig.json", "tsconfig.json"],
+    ["requirements.txt", "requirements.txt"],
+    ["pyproject.toml", "pyproject.toml"],
+    ["pom.xml", "pom.xml"],
+    ["go.mod", "go.mod"],
+    ["Gemfile", "Gemfile"],
+    ["Cargo.toml", "Cargo.toml"],
+    ["composer.json", "composer.json"],
+];
 
     for (const [relative, label] of checks) {
         if (hasPath(projectDir, relative)) {
@@ -139,14 +185,18 @@ export function detectTechStack(projectDir: string): TechStack {
     const pkg = readJsonIfExists(pkgPath);
     const deps = collectDependencies(pkg);
 
+    // Detect language via marker files first
+    const markerLanguage = detectLanguageByMarkers(projectDir);
+
     // Detect language
     const tsconfigExists = hasPath(projectDir, "tsconfig.json");
     const language: TechStack["language"] =
-        tsconfigExists || deps.has("typescript")
+        markerLanguage ??
+        (tsconfigExists || deps.has("typescript")
             ? "typescript"
             : deps.size > 0
                 ? "javascript"
-                : "unknown";
+                : "unknown");
 
     // Detect frameworks
     const frameworks: string[] = [];
@@ -178,7 +228,26 @@ export function detectTechStack(projectDir: string): TechStack {
 
     // Detect test runner (first match wins)
     const testRunnersOrder = ["vitest", "jest", "mocha", "ava", "@playwright/test", "cypress"];
-    const testRunner = testRunnersOrder.find((runner) => deps.has(runner))?.replace("@playwright/test", "playwright") ?? null;
+    let testRunner =
+        testRunnersOrder.find((runner) => deps.has(runner))?.replace("@playwright/test", "playwright") ?? null;
+
+    if (language === "python") {
+        const hasPytest =
+            hasPath(projectDir, "pytest.ini") ||
+            fileContains(projectDir, "requirements.txt", "pytest") ||
+            fileContains(projectDir, "pyproject.toml", "pytest");
+        testRunner = hasPytest ? "pytest" : null;
+    } else if (language === "go") {
+        testRunner = "go test";
+    } else if (language === "ruby") {
+        testRunner = fileContains(projectDir, "Gemfile", "rspec") ? "rspec" : null;
+    } else if (language === "rust") {
+        testRunner = "cargo test";
+    } else if (language === "php") {
+        testRunner = fileContains(projectDir, "composer.json", "phpunit") ? "phpunit" : null;
+    } else if (language === "java") {
+        testRunner = "junit";
+    }
 
     return {
         language,
@@ -186,4 +255,23 @@ export function detectTechStack(projectDir: string): TechStack {
         testRunner,
         buildTool,
     };
+}
+
+function detectLanguageByMarkers(projectDir: string): SupportedLanguage | null {
+    const markers: Array<[SupportedLanguage, string[]]> = [
+        ["python", ["pyproject.toml", "requirements.txt"]],
+        ["go", ["go.mod"]],
+        ["ruby", ["Gemfile"]],
+        ["rust", ["Cargo.toml"]],
+        ["php", ["composer.json"]],
+        ["java", ["pom.xml", "build.gradle", "build.gradle.kts"]],
+    ];
+
+    for (const [language, files] of markers) {
+        if (files.some((file) => hasPath(projectDir, file))) {
+            return language;
+        }
+    }
+
+    return null;
 }

@@ -174,12 +174,28 @@ async function detectAndConfirm(
 
     try {
         const languageInput = (
-            await ask("Language (typescript/javascript/unknown)", techStack.language)
+            await ask(
+                "Language (typescript/javascript/python/go/ruby/rust/php/java/unknown)",
+                techStack.language
+            )
         ).toLowerCase();
-        const normalizedLanguage: TechStack["language"] =
-            languageInput === "typescript" || languageInput === "javascript"
-                ? (languageInput as TechStack["language"])
-                : "unknown";
+
+        const allowedLanguages: TechStack["language"][] = [
+            "typescript",
+            "javascript",
+            "python",
+            "go",
+            "ruby",
+            "rust",
+            "php",
+            "java",
+            "unknown",
+        ];
+        const normalizedLanguage: TechStack["language"] = allowedLanguages.includes(
+            languageInput as TechStack["language"]
+        )
+            ? (languageInput as TechStack["language"])
+            : techStack.language;
 
         const frameworksInput = await ask(
             "Frameworks (comma-separated)",

@@ -15,6 +15,9 @@ npm install
 cp .env.example .env
 # Edit .env with your API keys
 
+# Install reporters (auto-detect Vitest/Jest/Pytest)
+npx superpowers-fusion install-reporter
+
 # Install CodexMCP
 claude mcp add codex -s user -- uvx --from git+https://github.com/GuDaStudio/codexmcp.git codexmcp
 
@@ -43,6 +46,7 @@ superpowers-fusion/
 - **Change Management** (from OpenSpec): Proposal → Implement → Archive workflow
 - **Context Management** (from Conductor): Persistent project context
 - **AI Collaboration** (via CodexMCP): Claude Code + Codex dual-agent workflow
+- **Polyglot Test Reporters**: Built-in reporters for Vitest, Jest, and Pytest copied to `.fusion/reporters/`
 
 ---
 
@@ -153,6 +157,13 @@ TDD enforcement adjusts by workflow phase:
 | `implement` | Enforced | Yes (Tier 2+) |
 | `executing-plans` | Enforced | Yes (Tier 2+) |
 | `verification` | Check only | No |
+
+### Multi-language Test Reporters
+
+- Run `npx superpowers-fusion install-reporter` to auto-detect the stack and copy reporters into `.fusion/reporters/`.
+- Vitest: reporter is auto-injected into `vitest.config.*` when found.
+- Jest: add `<rootDir>/.fusion/reporters/jest-reporter.js` to the `reporters` array.
+- Pytest: invoke with `pytest -p .fusion.reporters.pytest_reporter`.
 
 ---
 

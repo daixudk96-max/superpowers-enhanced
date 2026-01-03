@@ -1,100 +1,156 @@
 # Tasks: Restore Superpowers Canon (有机整合)
 
-## Phase 1: Tier 1 Skills (核心技能，差异最大)
+## Phase 1: 核心 Skills 有机整合
 
 ### 1.1 整合 test-driven-development SKILL.md <!-- Risk: Tier-2 -->
 
-- [ ] 1.1.1 分析原版结构（372行）：识别 Purpose/Workflow/Examples/Anti-patterns 各节
-- [ ] 1.1.2 分析 Fusion 版结构（68行）：识别 Risk Tier/多语言/豁免 各组件
-- [ ] 1.1.3 将 Risk Tier 表格嵌入 "When to Use" 节
-- [ ] 1.1.4 将豁免流程嵌入 Workflow 各步骤的控制节点
-- [ ] 1.1.5 新增 "Collaboration & Governance" 节，融入 Codex 协作规范
-- [ ] 1.1.6 恢复原版 Good/Bad 示例、借口反驳表、验证清单
-- [ ] 1.1.7 恢复所有 REQUIRED SUB-SKILL 引用
-- [ ] 1.1.8 复制 testing-anti-patterns.md 辅助文件
+**原版内容恢复：**
+
+- [ ] 1.1.1 恢复 YAML frontmatter（name, description）
+- [ ] 1.1.2 恢复 Graphviz 流程图（TDD cycle）
+- [ ] 1.1.3 恢复 Good/Bad 代码示例
+- [ ] 1.1.4 恢复"借口反驳表"（Excuse Busters）
+- [ ] 1.1.5 恢复验证清单
+
+**Fusion 扩展嵌入：**
+
+- [ ] 1.1.6 将 Risk Tier 表格嵌入 "When to Use" 节
+- [ ] 1.1.7 将 豁免流程 嵌入 Step 节点（非末尾）
+- [ ] 1.1.8 将多语言支持表格嵌入 "Testing" 节
 
 ### 1.2 整合 brainstorming SKILL.md <!-- Risk: Tier-2 -->
 
-- [ ] 1.2.1 恢复原版渐进式验证流程
-- [ ] 1.2.2 恢复子技能引用：superpowers:using-git-worktrees, superpowers:writing-plans
-- [ ] 1.2.3 将 Fusion 的 Options 表格格式嵌入 "Output Format" 节
+**原版内容恢复：**
+
+- [ ] 1.2.1 恢复 YAML frontmatter
+- [ ] 1.2.2 恢复渐进式验证流程
+- [ ] 1.2.3 恢复 `superpowers:using-git-worktrees` 引用
+- [ ] 1.2.4 恢复 `superpowers:writing-plans` 引用
+
+**Fusion 扩展嵌入：**
+
+- [ ] 1.2.5 将 Codex 协作嵌入 "Exploring approaches" 节
+- [ ] 1.2.6 将 Options 表格格式嵌入 "Presenting the design" 节
 
 ### 1.3 整合 writing-plans SKILL.md <!-- Risk: Tier-2 -->
 
-- [ ] 1.3.1 恢复执行交接选项（Subagent vs Parallel）
-- [ ] 1.3.2 恢复完整 TDD 任务模板
-- [ ] 1.3.3 将 Risk Tier 分配嵌入任务结构
-- [ ] 1.3.4 将 Codex 协作嵌入 "Collaboration" 节
-- [ ] 1.3.5 恢复子技能引用链
+**原版内容恢复：**
+
+- [ ] 1.3.1 恢复 YAML frontmatter
+- [ ] 1.3.2 恢复完整 Task Structure 模板
+- [ ] 1.3.3 恢复 Execution Handoff 选项（Subagent vs Parallel）
+- [ ] 1.3.4 恢复 `superpowers:executing-plans` 引用
+- [ ] 1.3.5 恢复 `superpowers:subagent-driven-development` 引用
+
+**Fusion 扩展嵌入：**
+
+- [ ] 1.3.6 将 Risk Tier 标注嵌入 Task Structure 模板
+- [ ] 1.3.7 将 Codex 协作嵌入 Plan Header 节
+- [ ] 1.3.8 将 OpenSpec 输出路径嵌入 "Save plans to" 节
 
 ---
 
-## Phase 2: Tier 2 Skills (重写或有子目录依赖)
+## Phase 2: 执行流程整合
 
 ### 2.1 整合 executing-plans SKILL.md <!-- Risk: Tier-2 -->
 
-- [ ] 2.1.1 恢复原版批量执行流程
-- [ ] 2.1.2 将 Fusion 的 Codex review 嵌入 "Post-batch" 节
-- [ ] 2.1.3 将 SHA 追踪嵌入 "Commit" 步骤
-- [ ] 2.1.4 恢复子技能引用：superpowers:finishing-a-development-branch
+**原版内容恢复：**
+
+- [ ] 2.1.1 恢复 YAML frontmatter
+- [ ] 2.1.2 恢复批量执行流程（5个步骤）
+- [ ] 2.1.3 恢复 `superpowers:finishing-a-development-branch` 引用
+- [ ] 2.1.4 恢复 "When to Stop and Ask for Help" 节
+
+**Fusion 扩展嵌入：**
+
+- [ ] 2.1.5 将 Codex prototype 嵌入 Step 2 前
+- [ ] 2.1.6 将 Codex review 嵌入 Step 2 后
+- [ ] 2.1.7 将 SHA 追踪嵌入 "Commit" 步骤
+- [ ] 2.1.8 将 Archive trigger 嵌入 Step 5 后
 
 ### 2.2 验证 subagent-driven-development <!-- Risk: Tier-1 -->
 
-- [ ] 2.2.1 确认已有完整原版 + Codex 扩展（299行）
-- [ ] 2.2.2 验证子目录 prompt 模板完整性
-
-### 2.3 整合 systematic-debugging <!-- Risk: Tier-1 -->
-
-- [ ] 2.3.1 恢复原版四阶段调试流程
-- [ ] 2.3.2 将 Codex 协作嵌入各阶段
-- [ ] 2.3.3 恢复辅助文件（condition-based-waiting.md 等）
+- [ ] 2.2.1 确认已完整（299行含 Codex 扩展）
+- [ ] 2.2.2 确认子技能引用存在
 
 ---
 
-## Phase 3: Tier 3 Skills (其他技能)
+## Phase 3: 辅助 Skills 恢复
 
-### 3.1 整合 using-superpowers SKILL.md <!-- Risk: Tier-1 -->
+### 3.1 整合 using-superpowers SKILL.md <!-- Risk: Tier-2 -->
 
-- [ ] 3.1.1 恢复完整流程图（Graphviz dot）
-- [ ] 3.1.2 恢复完整 Red Flags 表格
+**原版内容恢复：**
 
-### 3.2-3.8 其他 7 个 Skills <!-- Risk: Tier-0/1 -->
+- [ ] 3.1.1 恢复 Graphviz 流程图（skill_flow）
+- [ ] 3.1.2 恢复 "Red Flags" 标题（替代 "Rationalizations to Reject"）
 
-- [ ] 3.2 整合 verification-before-completion
-- [ ] 3.3 整合 finishing-a-development-branch
-- [ ] 3.4 整合 dispatching-parallel-agents
-- [ ] 3.5 整合 requesting-code-review（含辅助文件）
-- [ ] 3.6 整合 receiving-code-review
-- [ ] 3.7 整合 using-git-worktrees
-- [ ] 3.8 整合 writing-skills（含辅助文件和 examples/）
+**Fusion 新功能适配（嵌入）：**
+
+- [ ] 3.1.3 在 "Skill Types" 节增加 Risk Tier 系统说明：
+  ```
+  **Risk-Tiered** (TDD enforcement): Tier 0-3 determines TDD strictness.
+  ```
+- [ ] 3.1.4 新增 "Codex Collaboration" 节：
+  ```
+  ## Codex Collaboration
+  When implementing or reviewing, use Codex for:
+  - Code prototypes (unified diff only)
+  - Code review after implementation
+  - Requirement analysis and edge case identification
+  ```
+- [ ] 3.1.5 新增 "Change Management" 节：
+  ```
+  ## Change Management (OpenSpec)
+  Commands for structured change workflow:
+  - `/new-change {id}` - Start new change with proposal
+  - `/implement` - Execute tasks with TDD compliance
+  - `/archive {id}` - Archive completed change
+  - `/revert {id}` - Rollback change
+  ```
+
+### 3.2 验证其他 Skills <!-- Risk: Tier-0 -->
+
+
+- [ ] 3.2.1 verification-before-completion
+- [ ] 3.2.2 finishing-a-development-branch
+- [ ] 3.2.3 requesting-code-review
+- [ ] 3.2.4 receiving-code-review
+- [ ] 3.2.5 using-git-worktrees
 
 ---
 
 ## Phase 4: 验证与收尾
 
-### 4.1 全局验证 <!-- Risk: Tier-0 -->
+### 4.1 引用链验证 <!-- Risk: Tier-0 -->
 
-- [ ] 4.1.1 运行 `grep -r "REQUIRED SUB-SKILL" skills/` 验证引用链
-- [ ] 4.1.2 验证所有 SKILL.md 的 YAML frontmatter 格式
-- [ ] 4.1.3 验证 Risk Tier 嵌入位置正确
-- [ ] 4.1.4 验证 Codex 协作融入 Collaboration 节
+- [ ] 4.1.1 运行 `grep -r "REQUIRED SUB-SKILL" skills/` 应返回 ≥5 个结果
+- [ ] 4.1.2 运行 `grep -r "superpowers:" skills/` 验证引用格式
 
-### 4.2 归档 <!-- Risk: Tier-0 -->
+### 4.2 工作流验证 <!-- Risk: Tier-0 -->
 
-- [ ] 4.2.1 更新 README.md
-- [ ] 4.2.2 归档此变更
+- [ ] 4.2.1 测试 /brainstorm → brainstorming skill
+- [ ] 4.2.2 测试 brainstorming → writing-plans 引用
+- [ ] 4.2.3 测试 writing-plans → executing-plans 引用
+- [ ] 4.2.4 测试 executing-plans → finishing-a-development-branch 引用
+
+### 4.3 归档 <!-- Risk: Tier-0 -->
+
+- [ ] 4.3.1 运行 openspec validate
+- [ ] 4.3.2 归档变更
 
 ---
 
 ## 验证命令
 
 ```bash
-# 检查子技能引用链
-grep -r "REQUIRED SUB-SKILL" skills/
+# 引用链完整性
+grep -r "REQUIRED SUB-SKILL" skills/ | wc -l  # 应 ≥5
 
-# 检查 Risk Tier 嵌入
-grep -l "Risk Tier" skills/*/SKILL.md
+# Fusion 扩展嵌入
+grep -l "Risk Tier" skills/*/SKILL.md  # 应包含 tdd, writing-plans
 
-# 检查 Codex 协作融入
-grep -l "Codex" skills/*/SKILL.md
+# 工作流连通性
+grep "superpowers:" skills/brainstorming/SKILL.md    # using-git-worktrees, writing-plans
+grep "superpowers:" skills/writing-plans/SKILL.md    # executing-plans, subagent
+grep "superpowers:" skills/executing-plans/SKILL.md  # finishing-a-development-branch
 ```
