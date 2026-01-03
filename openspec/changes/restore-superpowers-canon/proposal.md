@@ -43,6 +43,23 @@
 | `/archive {id}` | 在 `executing-plans` 完成后触发，整合到 Step 5 |
 | `/revert {id}` | 作为变更处理，需 `writing-plans` + `executing-plans` |
 
+### 4. 多语言 Reporters 移植
+
+从 `tdd-guard/reporters` 移植缺失的多语言 TDD Reporters：
+
+| 语言 | 源文件 | 目标位置 | 状态 |
+| --- | --- | --- | --- |
+| Go | `tdd-guard/reporters/go/` | `lib/reporters/go/` | ❌ 待移植 |
+| Ruby | `tdd-guard/reporters/rspec/` | `lib/reporters/ruby/` | ❌ 待移植 |
+| Rust | `tdd-guard/reporters/rust/` | `lib/reporters/rust/` | ❌ 待移植 |
+| PHP | `tdd-guard/reporters/phpunit/` | `lib/reporters/php/` | ❌ 待移植 |
+| Storybook | `tdd-guard/reporters/storybook/` | `lib/reporters/storybook/` | ❌ 待移植 |
+
+**install-reporter.ts 扩展**：
+
+添加对以上语言的安装逻辑，输出相应的配置说明。
+
+
 ## 影响范围
 
 ### 受影响 Skills

@@ -1,25 +1,49 @@
-# Skill: writing-plans
+---
+name: writing-plans
+description: Use when you have a spec or requirements for a multi-step task, before touching code
+---
 
-## Purpose
+# Writing Plans
 
-Produce an executable, phase-structured plan with explicit risk tiers and Codex collaboration points.
+## Overview
 
-## When to Use
+Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
 
-- After brainstorming a direction
-- Before any implementation or refactor
-- When risk or scope needs explicit control
+Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
-## Steps
+**Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
-1. **Context intake**: Goals, constraints, repos, environments, deadlines
-2. **Codex collaboration**: Ask Codex for requirement analysis and edge cases; incorporate feedback
-3. **Phase structuring**: Break work into Phases → Tasks → Subtasks; mark dependencies
-4. **Risk tier assignment**: Label each task with Risk Tier (0-3)
-5. **Acceptance criteria**: Define clear success conditions per task
-6. **Output**: Generate `proposal.md` and `tasks.md` in `changes/{change-name}/`
+**Context:** This should be run in a dedicated worktree (created by brainstorming skill).
 
-## Risk Tiers
+**Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md` or `openspec/changes/<id>/tasks.md`
+
+## Codex Collaboration
+
+Before drafting the plan, invoke Codex for requirement analysis:
+
+```
+mcp_codex_codex({
+  PROMPT: "请分析以下需求，识别边界情况和潜在风险:\n\n{requirements}",
+  cd: "{project_root}",
+  sandbox: "read-only",
+  SESSION_ID: session.planningSession
+})
+```
+
+Incorporate Codex feedback into the plan structure.
+
+## Bite-Sized Task Granularity
+
+**Each step is one action (2-5 minutes):**
+- "Write the failing test" - step
+- "Run it to make sure it fails" - step
+- "Implement the minimal code to make the test pass" - step
+- "Run the tests and make sure they pass" - step
+- "Commit" - step
+
+## Risk Tier Assignment
+
+Label each task with Risk Tier (0-3):
 
 | Tier | Description | TDD Requirement |
 |------|-------------|-----------------|
@@ -28,35 +52,99 @@ Produce an executable, phase-structured plan with explicit risk tiers and Codex 
 | **2** | Require failing test OR exemption | Test or exemption |
 | **3** | Strict TDD (core logic, new features) | Mandatory test first |
 
-## Phase Structure Format
+## Plan Document Header
+
+**Every plan MUST start with this header:**
 
 ```markdown
-## Phase 1: [Phase Title]
+# [Feature Name] Implementation Plan
 
-- [ ] 1.1 [Task description] <!-- Risk: Tier-X -->
-  - [ ] 1.1.1 [Subtask]
-  - [ ] 1.1.2 [Subtask]
-- [ ] 1.2 [Task description] <!-- Risk: Tier-X -->
+> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
 
-## Phase 2: [Phase Title]
-...
+**Goal:** [One sentence describing what this builds]
+
+**Architecture:** [2-3 sentences about approach]
+
+**Tech Stack:** [Key technologies/libraries]
+
+---
 ```
 
-## Codex Collaboration
+## Task Structure
 
-After initial analysis, invoke Codex to validate and enhance:
+```markdown
+### Task N: [Component Name] <!-- Risk: Tier-X -->
 
+**Files:**
+- Create: `exact/path/to/file.py`
+- Modify: `exact/path/to/existing.py:123-145`
+- Test: `tests/exact/path/to/test.py`
+
+**Step 1: Write the failing test**
+
+```python
+def test_specific_behavior():
+    result = function(input)
+    assert result == expected
 ```
-mcp_codex_codex({
-  PROMPT: "请分析以下需求，识别边界情况和潜在风险:\n\n{needs}",
-  cd: "{project_root}",
-  sandbox: "read-only",
-  SESSION_ID: session.planningSession  // continue conversation
-})
+
+**Step 2: Run test to verify it fails**
+
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: FAIL with "function not defined"
+
+**Step 3: Write minimal implementation**
+
+```python
+def function(input):
+    return expected
 ```
+
+**Step 4: Run test to verify it passes**
+
+Run: `pytest tests/path/test.py::test_name -v`
+Expected: PASS
+
+**Step 5: Commit**
+
+```bash
+git add tests/path/test.py src/path/file.py
+git commit -m "feat: add specific feature"
+```
+```
+
+## Remember
+- Exact file paths always
+- Complete code in plan (not "add validation")
+- Exact commands with expected output
+- Reference relevant skills with @ syntax
+- DRY, YAGNI, TDD, frequent commits
+- **Risk Tier on every task**
+
+## Execution Handoff
+
+After saving the plan, offer execution choice:
+
+**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
+
+**1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
+
+**2. Parallel Session (separate)** - Open new session with executing-plans, batch execution with checkpoints
+
+**Which approach?"**
+
+**If Subagent-Driven chosen:**
+- **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
+- Stay in this session
+- Fresh subagent per task + code review
+
+**If Parallel Session chosen:**
+- Guide them to open new session in worktree
+- **REQUIRED SUB-SKILL:** New session uses superpowers:executing-plans
 
 ## Output Artifacts
 
-- `changes/{name}/proposal.md` - Why, What, Impact
-- `changes/{name}/tasks.md` - Phase-structured task list
-- `changes/{name}/specs/` - Detailed specifications (if needed)
+When using OpenSpec workflow:
+- `openspec/changes/{name}/proposal.md` - Why, What, Impact
+- `openspec/changes/{name}/tasks.md` - Phase-structured task list
+- `openspec/changes/{name}/specs/` - Detailed specifications (if needed)

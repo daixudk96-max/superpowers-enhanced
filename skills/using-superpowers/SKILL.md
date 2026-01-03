@@ -23,10 +23,34 @@ This is not negotiable. This is not optional. You cannot rationalize your way ou
 
 **Invoke relevant or requested skills BEFORE any response or action.** Even a 1% chance a skill might apply means that you should invoke the skill to check. If an invoked skill turns out to be wrong for the situation, you don't need to use it.
 
-## Rationalizations to Reject
+```dot
+digraph skill_flow {
+    "User message received" [shape=doublecircle];
+    "Might any skill apply?" [shape=diamond];
+    "Invoke Skill tool" [shape=box];
+    "Announce: 'Using [skill] to [purpose]'" [shape=box];
+    "Has checklist?" [shape=diamond];
+    "Create TodoWrite todo per item" [shape=box];
+    "Follow skill exactly" [shape=box];
+    "Respond (including clarifications)" [shape=doublecircle];
 
-| Rationalization | Reality |
-|-----------------|---------|
+    "User message received" -> "Might any skill apply?";
+    "Might any skill apply?" -> "Invoke Skill tool" [label="yes, even 1%"];
+    "Might any skill apply?" -> "Respond (including clarifications)" [label="definitely not"];
+    "Invoke Skill tool" -> "Announce: 'Using [skill] to [purpose]'";
+    "Announce: 'Using [skill] to [purpose]'" -> "Has checklist?";
+    "Has checklist?" -> "Create TodoWrite todo per item" [label="yes"];
+    "Has checklist?" -> "Follow skill exactly" [label="no"];
+    "Create TodoWrite todo per item" -> "Follow skill exactly";
+}
+```
+
+## Red Flags
+
+These thoughts mean STOP—you're rationalizing:
+
+| Thought | Reality |
+|---------|---------|
 | "This is just a simple question" | Questions are tasks. Check for skills. |
 | "I need more context first" | Skill check comes BEFORE clarifying questions. |
 | "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
@@ -56,7 +80,47 @@ When multiple skills could apply, use this order:
 
 **Flexible** (patterns): Adapt principles to context.
 
-The skill itself tells you which.
+**Risk-Tiered** (TDD enforcement): Tier 0-3 determines TDD strictness:
+
+| Tier | TDD Requirement | Example Files |
+|------|-----------------|---------------|
+| 0 | None | docs, .gitignore, comments |
+| 1 | Logged only | CSS, renames, config |
+| 2 | Test OR exemption | UI components, utilities |
+| 3 | Strict test-first | Core logic, new features |
+
+The skill itself tells you which type applies.
+
+## Codex Collaboration
+
+When implementing or reviewing, use Codex for:
+
+- **Code prototypes**: Request unified diff before implementation
+- **Code review**: After implementation, validate logic and edge cases
+- **Requirement analysis**: Identify ambiguities and potential risks
+
+```
+mcp_codex_codex({
+  PROMPT: "...",
+  cd: "{project_root}",
+  sandbox: "read-only"
+})
+```
+
+**Important**: Codex outputs are references only. Exercise independent judgment.
+
+## Change Management (OpenSpec)
+
+Commands for structured change workflow:
+
+| Command | Purpose |
+|---------|---------|
+| `/new-change {id}` | Start new change with proposal |
+| `/implement` | Execute tasks with TDD compliance |
+| `/archive {id}` | Archive completed change |
+| `/revert {id}` | Rollback change |
+
+Use `openspec list` to view active changes.
 
 ## User Instructions
 

@@ -115,6 +115,46 @@ function printPytestInstructions(): void {
     console.log("  pytest -p .fusion.reporters.pytest_reporter");
 }
 
+function printGoInstructions(): void {
+    console.log("\nAdd to your Makefile or test script:");
+    console.log(`
+# Makefile
+test:
+\tgo test -json ./... 2>&1 | tdd-guard-go -project-root $(shell pwd)
+`);
+    console.log("\nInstall the Go reporter:");
+    console.log("  go install github.com/nizos/tdd-guard/reporters/go/cmd/tdd-guard-go@latest");
+}
+
+function printRustInstructions(): void {
+    console.log("\nAdd to your Makefile or test script:");
+    console.log(`
+# Makefile
+test:
+\ttdd-guard-rust --project-root $(shell pwd)
+`);
+    console.log("\nBuild and install the Rust reporter:");
+    console.log("  cd .fusion/reporters/rust && cargo build --release");
+    console.log("  cp target/release/tdd-guard-rust ~/.cargo/bin/");
+}
+
+function printPhpInstructions(): void {
+    console.log("\nAdd to your composer.json:");
+    console.log(`
+{
+  "require-dev": {
+    "tdd-guard/phpunit-extension": "^1.0"
+  }
+}
+`);
+    console.log("\nAdd to phpunit.xml:");
+    console.log(`
+<extensions>
+  <extension class="TddGuard\\PHPUnit\\Extension"/>
+</extensions>
+`);
+}
+
 export function installReporterCommand(): void {
     const projectDir = process.cwd();
     console.log("Superpowers-Fusion Reporter Installer\n");
@@ -165,5 +205,29 @@ export function installReporterCommand(): void {
         return;
     }
 
-    console.log("ℹ️  Reporter installation is currently available for Vitest, Jest, and Pytest.");
+    if (stack.language === "go") {
+        console.log("✓ Go project detected");
+        printGoInstructions();
+        return;
+    }
+
+    if (stack.language === "rust") {
+        console.log("✓ Rust project detected");
+        printRustInstructions();
+        return;
+    }
+
+    if (stack.language === "php") {
+        console.log("✓ PHP project detected");
+        printPhpInstructions();
+        return;
+    }
+
+    console.log("ℹ️  Reporter installation is currently available for:");
+    console.log("   - Vitest, Jest (TypeScript/JavaScript)");
+    console.log("   - Pytest (Python)");
+    console.log("   - Go test (Go)");
+    console.log("   - Cargo test (Rust)");
+    console.log("   - PHPUnit (PHP)");
 }
+
