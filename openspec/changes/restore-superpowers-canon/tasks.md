@@ -141,7 +141,7 @@
 ### 5.3 归档 <!-- Risk: Tier-0 -->
 
 - [x] 5.3.1 所有任务完成
-- [ ] 5.3.2 运行 openspec archive（待用户确认）
+- [x] 5.3.2 运行 openspec archive（待用户确认）
 
 ---
 
