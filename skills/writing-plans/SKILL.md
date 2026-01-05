@@ -123,24 +123,43 @@ git commit -m "feat: add specific feature"
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+计划完成后：
 
-**"Plan complete and saved to `docs/plans/<filename>.md`. Two execution options:**
+### Step 1: 用户审阅
 
-**1. Subagent-Driven (this session)** - I dispatch fresh subagent per task, review between tasks, fast iteration
+"计划已保存。请审阅计划内容。
 
-**2. Parallel Session (separate)** - Open new session with executing-plans, batch execution with checkpoints
+审阅完成后回复 'ok' 继续。"
 
-**Which approach?"**
+⚠️ **必须等待用户确认后才继续**
 
-**If Subagent-Driven chosen:**
+### Step 2: 创建 Worktree
+
+用户确认后：
+
+"正在创建隔离工作环境..."
+
+**REQUIRED SUB-SKILL:** Use superpowers:using-git-worktrees
+
+### Step 3: 选择执行方式
+
+Worktree 就绪后询问：
+
+"请选择执行方式：
+
+**1. Subagent-Driven (本会话)** → superpowers:subagent-driven-development
+**2. Sequential (当前 Agent)** → superpowers:executing-plans
+
+请选择 1 或 2。"
+
+**If Subagent-Driven (1) chosen:**
 - **REQUIRED SUB-SKILL:** Use superpowers:subagent-driven-development
 - Stay in this session
 - Fresh subagent per task + code review
 
-**If Parallel Session chosen:**
-- Guide them to open new session in worktree
-- **REQUIRED SUB-SKILL:** New session uses superpowers:executing-plans
+**If Sequential (2) chosen:**
+- **REQUIRED SUB-SKILL:** Use superpowers:executing-plans
+- Execute tasks in batches with checkpoints
 
 ## Output Artifacts
 
@@ -148,3 +167,4 @@ When using OpenSpec workflow:
 - `openspec/changes/{name}/proposal.md` - Why, What, Impact
 - `openspec/changes/{name}/tasks.md` - Phase-structured task list
 - `openspec/changes/{name}/specs/` - Detailed specifications (if needed)
+

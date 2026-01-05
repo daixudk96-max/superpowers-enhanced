@@ -144,3 +144,12 @@ This triggers the archive workflow to save metadata and create Git tags.
 
 **Pairs with:**
 - **using-git-worktrees** - Cleans up worktree created by that skill
+
+## 下一步
+
+完成后：
+
+**REQUIRED:** 运行 `/archive {change-name}` 归档变更
+
+调用 `superpowers:archiving-changes` 完成归档流程。
+

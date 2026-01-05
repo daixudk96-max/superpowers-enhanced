@@ -86,3 +86,12 @@ When presenting options, use a structured table:
 - **Explore alternatives** - Always propose 2-3 approaches before settling
 - **Incremental validation** - Present design in sections, validate each
 - **Be flexible** - Go back and clarify when something doesn't make sense
+
+## 下一步
+
+设计完成并保存后：
+
+**REQUIRED:** 运行 `/new-change {name}` 创建变更目录
+
+然后调用 `superpowers:creating-changes` 继续工作流程。
+

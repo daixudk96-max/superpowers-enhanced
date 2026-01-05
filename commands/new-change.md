@@ -110,3 +110,10 @@ For changes with code modifications:
 - Tests must be written/verified before implementation code
 - Risk tier in `proposal.md` determines TDD enforcement level
 
+## 执行
+
+变更目录创建后：
+
+**REQUIRED SUB-SKILL:** Use superpowers:writing-plans 编写任务计划
+
+
