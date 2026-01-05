@@ -1,6 +1,7 @@
 ---
 description: Implement an approved OpenSpec change and keep tasks in sync.
 ---
+
 <!-- OPENSPEC:START -->
 **Guardrails**
 - Favor straightforward, minimal implementations first and add complexity only when it is requested or clearly required.
@@ -11,7 +12,8 @@ description: Implement an approved OpenSpec change and keep tasks in sync.
 Track these steps as TODOs and complete them one by one.
 1. Read `changes/<id>/proposal.md`, `design.md` (if present), and `tasks.md` to confirm scope and acceptance criteria.
 2. Work through tasks sequentially, keeping edits minimal and focused on the requested change.
-   - **编码前**：必须向 codex 索要代码实现原型（要求 codex 仅给出 unified diff patch，严禁对代码做任何真实修改）。获取后以此为逻辑参考，重写形成企业生产级别、高可读性、高可维护性的代码。
+   - **复制修改适配或移植代码前（优先）**：如果要涉及复制修改适配或移植，必须向codex索要修改意见和重写改写的部分的代码，不要要求重新编码。
+   - **编码完全的新代码前**：如果要写完全的新代码，必须向 codex 索要代码实现原型（要求 codex 仅给出 unified diff patch，严禁对代码做任何真实修改）。获取后以此为逻辑参考，重写形成企业生产级别、高可读性、高可维护性的代码。
    - **编码后**：必须立即使用 codex review 代码改动和对应需求完成程度。
    - **独立思考**：codex 仅为参考，你必须有自己的判断，甚至对 codex 回答提出质疑。最终目标是与 codex 达成统一、全面、精准的意见。
 3. Confirm completion before updating statuses—make sure every item in `tasks.md` is finished.

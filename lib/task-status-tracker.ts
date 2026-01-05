@@ -17,6 +17,10 @@ export interface StatusData {
     startedAt: string;
     tasks: Record<string, TaskStatus>;
     codexSessions: Record<string, string>;
+    /** Path to the worktree directory (relative or absolute) */
+    worktreePath?: string;
+    /** Branch name used for the worktree */
+    worktreeBranch?: string;
 }
 
 /**
