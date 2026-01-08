@@ -5,6 +5,12 @@
         "moduleResolution": "NodeNext",
         "outDir": "dist",
         "rootDir": ".",
+        "baseUrl": ".",
+        "paths": {
+            "@tdd-guard/*": [
+                "./tdd-guard/src/*"
+            ]
+        },
         "declaration": true,
         "declarationMap": true,
         "resolveJsonModule": true,
@@ -25,12 +31,17 @@
     },
     "include": [
         "**/*.ts",
-        "**/*.tsx"
+        "**/*.tsx",
+        "tdd-guard"
     ],
     "exclude": [
         "dist",
         "node_modules",
         ".fusion",
-        "skills"
+        "skills",
+        "tdd-guard/reporters",
+        "tdd-guard/test",
+        "tdd-guard/**/*.test.ts",
+        "tdd-guard/vitest.config.ts"
     ]
 }

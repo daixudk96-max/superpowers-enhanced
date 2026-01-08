@@ -4,7 +4,7 @@ import {
     deleteSession,
     getSessionsByPurpose,
     type SessionRecord,
-} from "../hooks/sessionHandler.js";
+} from "../src/hooks/sessionHandler.js";
 
 export type CodexPurpose = "planning" | "implementation" | "review" | "general";
 

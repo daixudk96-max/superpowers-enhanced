@@ -1,0 +1,57 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(npm run build:*)",
+      "Bash(echo:*)",
+      "Bash(test:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(node dist/src/cli/tdd-toggle.js status)",
+      "Bash(node dist/src/cli/index.js verify-tdd --help)",
+      "Bash(node dist/src/cli/index.js verify-tdd:*)",
+      "Bash(rm:*)",
+      "Bash(dir /B C:githubmerage\" \"surperpowersuperpowers-fusionhooks)",
+      "Bash(\"C:\\\\github\\\\merage surperpower\\\\superpowers-fusion\\\\hooks\\\\run-node.cmd\" \"C:\\\\github\\\\merage surperpower\\\\superpowers-fusion\\\\dist\\\\src\\\\cli\\\\index.js\" verify-tdd --help)",
+      "Skill(superpowers-fusion:test-driven-development)",
+      "Bash(npm test:*)",
+      "Bash(pkill:*)",
+      "Bash(\"C:\\\\github\\\\merage surperpower\\\\superpowers-fusion\\\\hooks\\\\run-node.cmd\":*)",
+      "Bash(\"C:\\\\github\\\\merage surperpower\\\\superpowers-fusion\\\\hooks\\\\run-node.cmd\" \"C:\\\\github\\\\merage surperpower\\\\superpowers-fusion\\\\dist\\\\src\\\\cli\\\\index.js\" verify-tdd --file \"src/api/user-controller.ts\" --operation Edit)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|edit|write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node dist/src/cli/index.js verify-tdd"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node dist/src/hooks/session-start.js"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node dist/src/hooks/user-prompt-handler.js"
+          }
+        ]
+      }
+    ]
+  }
+}

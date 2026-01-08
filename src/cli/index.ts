@@ -4,6 +4,7 @@ import { verifyTddCommand } from './verify-tdd.js';
 import { installReporterCommand } from './install-reporter.js';
 import { openspecValidateCommand } from './openspec-validate.js';
 import { tddToggleCommand } from './tdd-toggle.js';
+import { tierCommand } from './tier.js';
 
 const args = process.argv.slice(2);
 const command = args[0];
@@ -21,6 +22,9 @@ switch (command) {
     case 'tdd-toggle':
         tddToggleCommand(args.slice(1));
         break;
+    case 'tier':
+        tierCommand(args.slice(1));
+        break;
     case 'openspec':
         if (args[1] === 'validate') {
             openspecValidateCommand(args.slice(2));
@@ -37,6 +41,7 @@ switch (command) {
         console.log('  superpowers-fusion verify-tdd                Run TDD verification (used by hooks)');
         console.log('  superpowers-fusion install-reporter          Set up Vitest/Jest reporter');
         console.log('  superpowers-fusion tdd-toggle [on|off]       Enable/disable TDD guard');
+        console.log('  superpowers-fusion tier set <1|2|3>          Apply TDD Guard tier preset');
         console.log('  superpowers-fusion openspec validate <id>    Validate OpenSpec change');
         process.exit(1);
 }

@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# DEPRECATED: 已迁移至 src/hooks/session-start.ts
+# 本文件仅保留作为对照参考，不再被 init 命令使用
+# Migration: migrate-session-hook-ts (2026-01)
 # SessionStart hook for superpowers-fusion plugin
 
 set -euo pipefail

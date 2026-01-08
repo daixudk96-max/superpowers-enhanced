@@ -1,0 +1,11 @@
+{
+  "session_id": "test",
+  "transcript_path": ".claude/tdd-guard/data/transcript.jsonl",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Edit",
+  "tool_input": {
+    "file_path": "src/api/user.ts",
+    "old_string": "",
+    "new_string": "export const x = 1;"
+  }
+}

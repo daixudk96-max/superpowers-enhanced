@@ -5,8 +5,8 @@
  */
 
 // Hooks
-export { preToolEdit, hasExemptionComment } from "./hooks/preToolEdit.js";
-export { postToolEdit, recordTaskCompletion } from "./hooks/postToolEdit.js";
+export { preToolEdit, hasExemptionComment } from "./src/hooks/preToolEdit.js";
+export { postToolEdit, recordTaskCompletion } from "./src/hooks/postToolEdit.js";
 export {
     loadSession,
     saveSession,
@@ -15,7 +15,7 @@ export {
     createCodexSession,
     cleanupOldSessions,
     type SessionRecord,
-} from "./hooks/sessionHandler.js";
+} from "./src/hooks/sessionHandler.js";
 
 // Configuration
 export {

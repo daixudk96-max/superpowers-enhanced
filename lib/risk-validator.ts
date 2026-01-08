@@ -46,8 +46,12 @@ const TIER_3_PATTERNS = [
  * Determine Risk Tier for a given file path
  */
 export function determineRiskTier(filePath: string): RiskTierResult {
+    // Normalize path separators to forward slashes for Windows compatibility
+    // This ensures regex patterns like /\/api\// work correctly
+    const normalizedPath = filePath.replace(/\\/g, '/');
+
     // Check Tier 0 (always allowed)
-    if (TIER_0_PATTERNS.some((p) => p.test(filePath))) {
+    if (TIER_0_PATTERNS.some((p) => p.test(normalizedPath))) {
         return {
             tier: 0,
             requiresTest: false,
@@ -57,7 +61,7 @@ export function determineRiskTier(filePath: string): RiskTierResult {
     }
 
     // Check Tier 1 (allowed with logging)
-    if (TIER_1_PATTERNS.some((p) => p.test(filePath))) {
+    if (TIER_1_PATTERNS.some((p) => p.test(normalizedPath))) {
         return {
             tier: 1,
             requiresTest: false,
@@ -67,7 +71,7 @@ export function determineRiskTier(filePath: string): RiskTierResult {
     }
 
     // Check Tier 3 (strict TDD)
-    if (TIER_3_PATTERNS.some((p) => p.test(filePath))) {
+    if (TIER_3_PATTERNS.some((p) => p.test(normalizedPath))) {
         return {
             tier: 3,
             requiresTest: true,

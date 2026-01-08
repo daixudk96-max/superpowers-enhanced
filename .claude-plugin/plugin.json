@@ -1,0 +1,20 @@
+{
+    "name": "superpowers-fusion",
+    "description": "Unified AI Coding Assistant: Superpowers + TDD-Guard + OpenSpec + Conductor",
+    "version": "0.1.0",
+    "author": {
+        "name": "daixudk96-max"
+    },
+    "homepage": "https://github.com/daixudk96-max/superpowers-fusion",
+    "repository": "https://github.com/daixudk96-max/superpowers-fusion",
+    "license": "MIT",
+    "keywords": [
+        "skills",
+        "tdd",
+        "openspec",
+        "conductor",
+        "workflow",
+        "hooks",
+        "ai-coding"
+    ]
+}

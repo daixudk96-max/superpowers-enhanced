@@ -9,8 +9,8 @@
     "main": "./dist/index.js",
     "entry_points": {
         "skills": "./skills",
-        "hooks": "./dist/hooks/index.js",
-        "commands": "./commands"
+        "commands": "./commands",
+        "hooks": "./hooks/hooks.json"
     },
     "permissions": {
         "file_system": [
@@ -23,11 +23,6 @@
         "process": [
             "spawn"
         ]
-    },
-    "hooks": {
-        "preToolEdit": "./dist/hooks/preToolEdit.js",
-        "postToolEdit": "./dist/hooks/postToolEdit.js",
-        "sessionHandler": "./dist/hooks/sessionHandler.js"
     },
     "dependencies": {
         "codex-mcp": "required"
